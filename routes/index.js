@@ -15,12 +15,6 @@ const storj = new Environment({
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  storj.getInfo(function(err, result) {
-    if (err) {
-      return console.error(err);
-    }
-    console.log('info:', result);
-
     storj.getBuckets(function(err, result) {
       if (err) {
         return console.error(err);
@@ -29,7 +23,15 @@ router.get('/', function(req, res, next) {
       storj.destroy();
     });
   });
-  res.render('index', { title: 'Express' });
+  return res.send({ response: result });
+});
+
+router.get('get-info', function(req, res, next) {
+  storj.getInfo(function(err, result) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log('info:', result);
 });
 
 module.exports = router;
