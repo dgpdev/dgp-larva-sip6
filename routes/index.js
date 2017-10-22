@@ -6,7 +6,7 @@ const { Environment } = require('storj');
 
 // SIP6
 const storj = new Environment({
-  bridgeUrl: 'https://alpha.digipulse.io:8080',
+  bridgeUrl: 'http://localhost:8080',
   bridgeUser: 'steve@digipulse.io',
   bridgePass: 'test',
   encryptionKey: 'test',
