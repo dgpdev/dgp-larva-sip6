@@ -12,6 +12,17 @@
     "express": "~4.15.5",
     "jade": "~1.11.0",
     "morgan": "~1.9.0",
-    "serve-favicon": "~2.4.5"
+    "serve-favicon": "~2.4.5",
+    "bcrypt": "1.0.2",
+    "bootstrap": "^4.0.0-beta",
+    "express-session": "1.15.5",
+    "forever": "^0.15.3",
+    "is-empty": "1.2.0",
+    "node-sass": "^4.5.3",
+    "node-sass-middleware": "^0.11.0",
+    "serve-favicon": "~2.3.0",
+    "toastr": "2.1.2",
+    "tooltip.js": "^1.1.5",
+    "express-fileupload": "0.3.0"
   }
 }
