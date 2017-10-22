@@ -52,7 +52,7 @@ router.get('/vault/file/upload/:vault/:filepath', function(req, res, next) {
   var bucketId = req.params.vault;
   var fileP = req.params.filepath;
 
-  storj.storeFile(bucketId, uploadFilePath, {
+  storj.storeFile(bucketId, fileP, {
   filename: fileName,
   progressCallback: function(progress, uploadedBytes, totalBytes) {
     console.log('Progress: %d, uploadedBytes: %d, totalBytes: %d',
