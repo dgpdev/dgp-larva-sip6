@@ -39,12 +39,32 @@ router.get('/vault/create/:name', function(req, res, next) {
   var vaultName = req.params.name;
 
   storj.createBucket(vaultName, function(err, result) {
-  if (err) {
-    return console.error(err);
-  }
-  return res.send({ result: result });
-  storj.destroy();
+    if (err) {
+      return console.error(err);
+    }
+    return res.send({ result: result });
+    storj.destroy();
+  });
 });
+
+/* CREATE VAULTS */
+router.get('/vault/file/upload/:vault/:filepath', function(req, res, next) {
+  var bucketId = req.params.vault;
+  var fileP = req.params.filepath;
+
+  storj.storeFile(bucketId, uploadFilePath, {
+  filename: fileName,
+  progressCallback: function(progress, uploadedBytes, totalBytes) {
+    console.log('Progress: %d, uploadedBytes: %d, totalBytes: %d',
+                progress, uploadedBytes, totalBytes);
+  },
+  finishedCallback: function(err, fileId) {
+    if (err) {
+      return console.error(err);
+    }
+    return res.send({ result: fileId });
+    }
+  });
 });
 
 
