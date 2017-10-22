@@ -21,10 +21,10 @@ router.get('/', function(req, res, next) {
       }
       console.log('buckets:', result);
       storj.destroy();
+      return res.send({ response: result });
     });
   });
-  return res.send({ response: result });
-});
+  
 
 router.get('get-info', function(req, res, next) {
   storj.getInfo(function(err, result) {
