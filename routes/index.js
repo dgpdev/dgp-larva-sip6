@@ -13,7 +13,7 @@ const storj = new Environment({
   logLevel: 4
 });
 
-/* GET home page. */
+/* GET GENERAL INFO */
 router.get('/', function(req, res, next) {
   storj.getInfo(function(err, result) {
     if (err) {
@@ -23,8 +23,8 @@ router.get('/', function(req, res, next) {
   });
 });
 
+/* LIST ALL VAULTS */
 router.get('/vault', function(req, res, next) {
-
   storj.getBuckets(function(err, result) {
     if (err) {
       return console.error(err);
@@ -32,9 +32,20 @@ router.get('/vault', function(req, res, next) {
     return res.send({ result: result });
     storj.destroy();
   });
-
 });
 
+/* CREATE VAULTS */
+router.get('/vault/create/:name', function(req, res, next) {
+  var vaultName = req.params.name;
+
+  storj.createBucket(vaultName, function(err, result) {
+  if (err) {
+    return console.error(err);
+  }
+  return res.send({ result: result });
+  storj.destroy();
+});
+});
 
 
 
