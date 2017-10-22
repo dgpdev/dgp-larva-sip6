@@ -15,23 +15,27 @@ const storj = new Environment({
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    storj.getBuckets(function(err, result) {
-      if (err) {
-        return console.error(err);
-      }
-      console.log('buckets:', result);
-      storj.destroy();
-      return res.send({ response: result });
-    });
-  });
-  
-
-router.get('get-info', function(req, res, next) {
   storj.getInfo(function(err, result) {
     if (err) {
       return console.error(err);
     }
-    console.log('info:', result);
+    return res.send({ result: result });
+  });
 });
+
+router.get('/vault', function(req, res, next) {
+
+  storj.getBuckets(function(err, result) {
+    if (err) {
+      return console.error(err);
+    }
+    return res.send({ result: result });
+    storj.destroy();
+  });
+
+});
+
+
+
 
 module.exports = router;
