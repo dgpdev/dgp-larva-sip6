@@ -72,7 +72,7 @@ router.get('/vault/file/download/:vault/:fileid', function(req, res, next) {
 
   var bucketId = req.params.vault;
   var fileId = req.params.fileid;
-  var downloadFilePath = '/test.js';
+  var downloadFilePath = './test.js';
 
   storj.resolveFile(bucketId, fileId, downloadFilePath, {
     progressCallback: function(progress, downloadedBytes, totalBytes) {
