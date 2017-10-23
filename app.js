@@ -18,7 +18,7 @@ app.set('view engine', 'jade');
 
 app.use(session({
     secret: 'nFbsEaDmYrP4aapJn2H7eMGBcdySnnyqJrYXUxYGmKRfdUh8Fq36RGXFDj7xDE3QH3fMJa36yr5umUnPJfPcgj9qDGeW65f5KxsK6B54bbGxLDEKAK5XYGN7ALbW9WcK',
-    resave: true,
+    resave: false,
     saveUninitialized: true
 }));
 

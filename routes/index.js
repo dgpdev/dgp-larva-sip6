@@ -5,13 +5,23 @@ var router = express.Router();
 const { Environment } = require('storj');
 
 // SIP6
-var storj = new Environment({
-  bridgeUrl: 'http://alpha.digipulse.io:8080',
-  bridgeUser: 'steve@digipulse.io',
-  bridgePass: 'test',
-  encryptionKey: 'test',
-  logLevel: 4
+var storj;
+
+
+/* GET GENERAL INFO */
+router.get('/login/:user/:pass', function(req, res, next) {
+  storj = new Environment({
+   bridgeUrl: 'http://alpha.digipulse.io:8080',
+   bridgeUser: 'steve@digipulse.io',
+   bridgePass: 'test',
+   encryptionKey: 'test',
+   logLevel: 4
+ });
+ return storj;
 });
+
+
+
 
 /* GET GENERAL INFO */
 router.get('/', function(req, res, next) {
