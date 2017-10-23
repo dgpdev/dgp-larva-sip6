@@ -19,7 +19,14 @@ router.get('/login/:user/:pass', function(req, res, next) {
    encryptionKey: 'test',
    logLevel: 3
  });
- return res.send({ result: storj });
+
+ storj.getBuckets(function(err, result) {
+   if (err) {
+     return console.error(err);
+   }
+   return res.send({ result: result, storj: storj });
+   storj.destroy();
+ });
 });
 
 
