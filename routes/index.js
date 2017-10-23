@@ -11,7 +11,7 @@ var storj;
 /* GET GENERAL INFO */
 router.get('/login/:user/:pass', function(req, res, next) {
 
-try {
+
  storj = new Environment({
    bridgeUrl: 'http://alpha.digipulse.io:8080',
    bridgeUser: req.params.user,
@@ -19,10 +19,13 @@ try {
    encryptionKey: 'test',
    logLevel: 3
  });
- return res.send({ result: 'logged in' });
- } catch (err) {
-   return res.send({ result: err });
- }
+
+ storj.getInfo(function(err, result) {
+   if (err) {
+     return res.send({ result: err });
+   }
+   return res.send({ result: 'logged in' });
+ });
 
 });
 
