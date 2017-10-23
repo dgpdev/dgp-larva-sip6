@@ -10,12 +10,14 @@ var storj;
 
 /* GET GENERAL INFO */
 router.get('/login/:user/:pass', function(req, res, next) {
+
+
   storj = new Environment({
    bridgeUrl: 'http://alpha.digipulse.io:8080',
-   bridgeUser: 'steve@digipulse.io',
-   bridgePass: 'test',
+   bridgeUser: req.params.user,
+   bridgePass: req.params.pass,
    encryptionKey: 'test',
-   logLevel: 4
+   logLevel: 3
  });
  return storj;
 });
