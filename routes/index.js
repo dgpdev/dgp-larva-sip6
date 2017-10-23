@@ -5,7 +5,7 @@ var router = express.Router();
 const { Environment } = require('storj');
 
 // SIP6
-const storj = new Environment({
+var storj = new Environment({
   bridgeUrl: 'http://alpha.digipulse.io:8080',
   bridgeUser: 'steve@digipulse.io',
   bridgePass: 'test',
@@ -67,7 +67,6 @@ router.get('/vault/file/upload/:vault/:filepath', function(req, res, next) {
   });
 });
 
-
 router.get('/vault/file/download/:vault/:fileid', function(req, res, next) {
 
   var bucketId = req.params.vault;
@@ -91,3 +90,17 @@ router.get('/vault/file/download/:vault/:fileid', function(req, res, next) {
 
 
 module.exports = router;
+
+/* Info only, these calls need action
+ Nan::SetPrototypeMethod(constructor, "getInfo", GetInfo);
+ Nan::SetPrototypeMethod(constructor, "getBuckets", GetBuckets);
+ Nan::SetPrototypeMethod(constructor, "createBucket", CreateBucket);
+ Nan::SetPrototypeMethod(constructor, "deleteBucket", DeleteBucket);
+ Nan::SetPrototypeMethod(constructor, "listFiles", ListFiles);
+ Nan::SetPrototypeMethod(constructor, "storeFile", StoreFile);
+ Nan::SetPrototypeMethod(constructor, "storeFileCancel", StoreFileCancel);
+ Nan::SetPrototypeMethod(constructor, "resolveFile", ResolveFile);
+ Nan::SetPrototypeMethod(constructor, "resolveFileCancel", ResolveFileCancel);
+ Nan::SetPrototypeMethod(constructor, "deleteFile", DeleteFile);
+ Nan::SetPrototypeMethod(constructor, "destroy", DestroyEnvironment);
+ */
