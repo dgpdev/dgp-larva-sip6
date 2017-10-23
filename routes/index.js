@@ -47,7 +47,7 @@ router.get('/vault/create/:name', function(req, res, next) {
   });
 });
 
-/* CREATE VAULTS */
+/* Upload files */
 router.get('/vault/file/upload/:vault/:filepath', function(req, res, next) {
   var bucketId = req.params.vault;
   var fileP = req.params.filepath;
@@ -67,6 +67,27 @@ router.get('/vault/file/upload/:vault/:filepath', function(req, res, next) {
   });
 });
 
+
+router.get('/vault/file/download/:vault/:fileid', function(req, res, next) {
+
+  var bucketId = req.params.vault;
+  var fileId = req.params.fileid;
+  var downloadFilePath = '/test.js';
+
+  storj.resolveFile(bucketId, fileId, downloadFilePath, {
+    progressCallback: function(progress, downloadedBytes, totalBytes) {
+      console.log('Progress: %d, downloadedBytes: %d, totalBytes: %d',
+                  progress, downloadedBytes, totalBytes);
+    },
+    finishedCallback: function(err) {
+      if (err) {
+        return console.error(err);
+      }
+      console.log('File download complete');
+      storj.destroy();
+    }
+  });
+});
 
 
 module.exports = router;
