@@ -20,11 +20,12 @@ router.get('/login/:user/:pass', function(req, res, next) {
    logLevel: 3
  });
 
- storj.getInfo(function(err, result) {
+ storj.getBuckets(function(err, result) {
    if (err) {
      return res.send({ result: err });
    }
-   return res.send({ result: 'logged in' });
+   return res.send({ result: result });
+   storj.destroy();
  });
 
 });
