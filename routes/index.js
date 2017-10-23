@@ -19,7 +19,7 @@ router.get('/login/:user/:pass', function(req, res, next) {
    encryptionKey: 'test',
    logLevel: 3
  });
- return storj;
+ return res.send({ result: storj });
 });
 
 
