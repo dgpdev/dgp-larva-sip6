@@ -21,8 +21,8 @@ router.get('/login/:user/:pass', function(req, res, next) {
 
  storj.getBuckets(function(err, result) {
    if (err) {
-     console.error(err);
-     return res.send({ result: result,  err: err });
+     console.log(err);
+     return  (err);
    }
    return res.send({ result: result, storj: storj });
    storj.destroy();
