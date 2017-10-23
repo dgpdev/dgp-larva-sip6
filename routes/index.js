@@ -91,7 +91,7 @@ router.get('/vault/file/download/:vault/:fileid', function(req, res, next) {
 
 module.exports = router;
 
-/* Info only, these calls need action
+/* Info only, these calls need binding.
  Nan::SetPrototypeMethod(constructor, "getInfo", GetInfo);
  Nan::SetPrototypeMethod(constructor, "getBuckets", GetBuckets);
  Nan::SetPrototypeMethod(constructor, "createBucket", CreateBucket);
