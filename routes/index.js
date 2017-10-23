@@ -24,10 +24,9 @@ router.get('/login/:user/:pass', function(req, res, next) {
    if (err) {
      return res.send({ result: err });
    }
-   return res.send({ result: result });
+   return res.send({ result: result, storj: storj });
    storj.destroy();
  });
-
 });
 
 
