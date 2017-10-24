@@ -12,3 +12,21 @@ When **uploading** a file, please make sure it's inside your application `root` 
 You should input the vault's ID in the `/:vault` sections, for example `/vault/file/upload/0000000000000/test.txt`.
 
 To **download** the file, use `/vault/file/download/:vault/:fileid` in the same way as upload. Please * note that you should change * the `var downloadFilePath = './test.js';` to match your file extention. If you download a `.txt` file, you should name it `test.txt` instead.
+
+
+## Installing Storj SIP6 sources
+The current installation process can be some hassle if you have the incorrect Nodejs or NPM installed.
+It will fail to install when using NVM. 
+
+To install the SIP6 sources, use `npm install github:storj/node-libstorj --save ` and install them globally.
+
+Currently, no other options are available yet.
+
+
+## Dual storj packages
+
+The code runs on both the SIP5 as the SIP6 packages provided by Storj.
+
+To distinct both versions, different names have been used. For the SIP5 code, we declare `var storjlib = require('storj-lib');`
+
+To declare the SIP6 package, we use `const { Environment } = require('storj');`
