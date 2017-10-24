@@ -7,18 +7,18 @@ Digipulse Larva SIP6
 If **authentication** is needed, please use it inside the url.
 For example: `/login/email/pass` for login.
 
-When **uploading** a file, please make sure it's inside your application `root` folder and pass it on as URL parameter. For example `/vault/file/upload/:vault/:filepath` where `filepath` is your filename. 
+When **uploading** a file, please make sure it's inside your application `root` folder and pass it on as URL parameter. For example `/vault/file/upload/:vault/:filepath` where `filepath` is your filename.
 
 You should input the vault's ID in the `/:vault` sections, for example `/vault/file/upload/0000000000000/test.txt`.
 
-To **download** the file, use `/vault/file/download/:vault/:fileid` in the same way as upload. 
+To **download** the file, use `/vault/file/download/:vault/:fileid` in the same way as upload.
 
 Please **note that you should change** the `var downloadFilePath = './test.js';` to match your file extention. If you download a `.txt` file, you should name it `test.txt` instead.
 
 
 ## Installing Storj SIP6 sources
 The current installation process can be some hassle if you have the incorrect Nodejs or NPM installed.
-It will fail to install when using NVM. 
+It will fail to install when using NVM.
 
 To install the SIP6 sources, use `npm install github:storj/node-libstorj --save ` and install them globally.
 
@@ -46,3 +46,12 @@ All file manipulations **must** be handled by the SIP6 package. This flow will s
 The password will be sent only **once** to the server during login where it's encrypted using a 256 character passphrase even before it's stored in the user session. From this point on, the user session is secured.
 
 The password will then be decrypted serverside, away from the dangerous worldwide web.
+
+----
+
+The downloaded files are being stored in a random 24 characters foldername for the time of downloading.
+The folder is removed on the fly as soon as the download is completed.
+
+## Upgrades suggested
+
+  - `drivelogic.js` rename `buckets.buckets` to `buckets.result`

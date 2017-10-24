@@ -169,6 +169,7 @@ $('#upload-input').on('change', function(){
 
 $('#FILE_LIST').on( 'click', 'button.download', function () {
   downloadFile($(this).attr('data-drive'), $(this).attr('data-filename'), $(this).attr('data-id'), $(this).attr('data-mime'));
+  console.log($(this).attr('data-drive'));
 });
 
 $('#DRIVE_LIST').on( 'click', '.btn-getdrive', function () {
@@ -214,7 +215,7 @@ function downloadFile(containerID, filename, fileID, fileMime) {
   $.ajax({
     method: 'POST',
     /* /list/:id/download/:name/:fileid/mime/:mime */
-    url: '/drive/list/files/download',
+    url: '/vault/file/download',
     data: JSON.stringify(data),
     contentType:  'application/json',
     processData: false
@@ -228,7 +229,8 @@ function downloadFile(containerID, filename, fileID, fileMime) {
     if (response.status === 'success') {
       // Error handling
       toastr.success(response.message, 'Success!');
-      window.location = '/drive/download/' + filename ;
+      console.log(response.tmp);
+      window.location = '/download/' + response.tmp + '/' + filename ;
     }
   })
 }
@@ -292,6 +294,7 @@ function deleteFile(elem) {
 
 
 /* Get the drives available */
+// SIP6 rename
 function listDrives() {
   $('#DRIVE_SECTION').block({
     message: advancedBlocker('Loading vaults...'),
@@ -329,6 +332,7 @@ function listDrives() {
       });
       table.append("</tbody>");
       $('#DRIVE_SECTION').unblock();
+      console.log(primary_drive);
       listFiles(primary_drive);
     }
   })
@@ -336,16 +340,17 @@ function listDrives() {
 
 
 function listFiles(driveID) {
+
   var data = {};
   var fileSize = 0;
   data.driveID = driveID;
   data.msg = 'none';
 
-  console.log('requesting drive ' + driveID);
+  console.log('requesting drive ,' + data.driveID);
   $('.refresh-files').attr('data-drive', driveID);
   $.ajax({
     method: 'POST',
-    url: '/larva/vault/list/files',
+    url: '/vault/files',
     data: JSON.stringify(data),
     contentType:  'application/json',
     processData: false
@@ -371,9 +376,9 @@ function listFiles(driveID) {
       bucketsWithFiles.files.reverse().forEach(function(file) {
         //console.log(bucket);
         table.append("<tr><td class='filenames'><strong>" + file.filename + "</strong></td><td>" + file.filename.split('.').pop() + "</td> " +
-            "<td class=\"text-right\"><button class='btn btn-success download text-white btn-sm' data-mime='"+ file.filename.split('.').pop() +"' data-id='"+ file.id +"' data-drive='"+ file.bucket +"' data-filename='"+ file.filename +"'> " +
+            "<td class=\"text-right\"><button class='btn btn-success download text-white btn-sm' data-mime='"+ file.filename.split('.').pop() +"' data-id='"+ file.id +"' data-drive='"+ data.driveID +"' data-filename='"+ file.filename +"'> " +
             "<i class='fa fa-download' aria-hidden='true'></i></button> " +
-            "<button class='btn btn-danger text-white btn-sm' onClick='deleteFile(this);' data-id='"+ file.id +"' data-drive='"+ file.bucket +"'> " +
+            "<button class='btn btn-danger text-white btn-sm' onClick='deleteFile(this);' data-id='"+ data.driveID +"' data-drive='"+ driveID +"'> " +
             "<i class='fa fa-trash' aria-hidden='true'></i></button></td> " +
             "</tr>");
         fileSize += file.size;

@@ -9,6 +9,7 @@ var express = require('express');
 var router = express.Router();
 
 var crypto = require('crypto');
+var fs = require('fs');
 
 // SIP5
 var storjlib = require('storj-lib');
@@ -22,7 +23,7 @@ var storj;
 
 // SESSION data
 var SESSION_KEY = 'x6mJac43QZY93bCGu69XX9h8hFB2T5Z2pdpafrc52Gu7CfnQHPYE5KCY5acD4YB46SfCJSQK8699M8NtBbaFeCMp2gPMK2pWSUEZwxuTqYMwV34XE8fv9ar3tuBfz3QRr7vqAM8c6Fb72EheKR4UW5U79WMJ7d7RFjzFt9CcHkVnTZmBdJT7sEaexbMfqmzNcEvaxa9WBrZBBjn8UNe8Sd9sckEpccKjE4rZsUJSBnDnTnB8U5UquXMs7X7KkSbM'
-
+const tmpDir = '/temp';
 
 function storeSessionKey(req, key, user) {
     req.session.authed = true;
@@ -156,9 +157,10 @@ router.get('/vault/create/:name', auth, function(req, res, next) {
 });
 
 /* LIST ALL FILES */
-router.get('/vault/:name', auth, function(req, res, next) {
+router.post('/vault/files', auth, function(req, res, next) {
 
-  var vaultName = req.params.name;
+  var vaultName = req.body.driveID;
+  console.log(vaultName);
 
   storj = new Environment({
    bridgeUrl: DIGIPULSE_HUB,
@@ -172,7 +174,8 @@ router.get('/vault/:name', auth, function(req, res, next) {
     if (err) {
       return console.error(err);
     }
-    return res.send({ result: result });
+    // TODO: Emergency fix for single vault ONLY
+    return res.send({ status: 'success', files: result });
     //storj.destroy();
   });
 });
@@ -205,12 +208,30 @@ router.get('/vault/file/upload/:vault/:filepath', auth, function(req, res, next)
   });
 });
 
-router.get('/vault/file/download/:vault/:fileid', auth, function(req, res, next) {
+// SIP6 new package
+const fsextra = require('fs-extra');
+
+router.post('/vault/file/download', auth, function(req, res, next) {
 
 
-  var bucketId = req.params.vault;
-  var fileId = req.params.fileid;
-  var downloadFilePath = './test.js';
+
+  try {
+    var randomFolder = genRandomString(24);
+    var tmpPath = '/home/steve/dgp-larva-sip6'  + tmpDir + '/' + randomFolder;
+    console.log(tmpPath);
+    if (!fs.existsSync(tmpPath)){
+          fs.mkdirSync(tmpPath);
+      }
+
+
+  var bucketId = req.body.driveID;
+  var fileId = req.body.fileID;
+  var downloadFilePath = tmpPath + '/' + req.body.fileNAME;
+
+  console.log('init download' + downloadFilePath);
+} catch (err) {
+  console.log (err);
+}
 
   storj = new Environment({
    bridgeUrl: DIGIPULSE_HUB,
@@ -227,16 +248,41 @@ router.get('/vault/file/download/:vault/:fileid', auth, function(req, res, next)
     },
     finishedCallback: function(err) {
       if (err) {
-        return console.error(err);
+        return res.send({ status: 'fail', message: err.message });
       }
-      console.log('File download complete');
+
+      //res.download(downloadFilePath);
+      //fsextra.removeSync(tmpPath);
+      return res.send({ status: 'success', message: 'download complete', tmp:randomFolder  });
+
       //return res.send({ result: 'fileId' });
-      storj.destroy();
+      //storj.destroy();
     }
   });
 
 });
 
+router.get('/download/:tmp/:file', function(req, res, next) {
+
+
+    var fileNAME = '/home/steve/dgp-larva-sip6/temp/' + req.params.tmp + '/' +req.params.file;
+
+    res.download(fileNAME, function(err) {
+      if (err) {
+      // Handle error, but keep in mind the response may be partially-sent
+      // so check res.headersSent
+    } else {
+      fsextra.removeSync('/home/steve/dgp-larva-sip6/temp/' + req.params.tmp );
+    }
+  });
+
+});
+
+var genRandomString = function(length){
+    return crypto.randomBytes(Math.ceil(length/2))
+        .toString('hex') /** convert to hexadecimal format */
+        .slice(0,length);   /** return required number of characters */
+};
 
 module.exports = router;
 

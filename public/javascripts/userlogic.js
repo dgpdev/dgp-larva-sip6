@@ -248,7 +248,7 @@ $(document).ready(function() {
         $('#AUTH_SECTION .card').unblock();
       }
       if (response.status === 'success') {
-        window.location = '/vault/';
+        window.location = '/';
       }
 
     }).error(function(error) {
