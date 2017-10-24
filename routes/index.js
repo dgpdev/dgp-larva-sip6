@@ -1,9 +1,19 @@
+/* DIGIPULSE ALPHA SIP5 + SIP6 IMPLENTATION
+* This code combines SIP5 + SIP6 and will be known as SIP7
+*
+* DO NOT FORGET TO SET A NEW SESSION_KEY BEFORE LIVE STAGE !!!
+* Code by Steve Walschot
+*/
+
 var express = require('express');
 var router = express.Router();
+
+var crypto = require('crypto');
 
 // SIP5
 var storjlib = require('storj-lib');
 var DIGIPULSE_HUB = 'http://alpha.digipulse.io:8080';
+var SESSION_KEY = 'x6mJac43QZY93bCGu69XX9h8hFB2T5Z2pdpafrc52Gu7CfnQHPYE5KCY5acD4YB46SfCJSQK8699M8NtBbaFeCMp2gPMK2pWSUEZwxuTqYMwV34XE8fv9ar3tuBfz3QRr7vqAM8c6Fb72EheKR4UW5U79WMJ7d7RFjzFt9CcHkVnTZmBdJT7sEaexbMfqmzNcEvaxa9WBrZBBjn8UNe8Sd9sckEpccKjE4rZsUJSBnDnTnB8U5UquXMs7X7KkSbM'
 var client;
 var keypair;
 
@@ -13,52 +23,85 @@ const { Environment } = require('storj');
 // SIP6
 var storj;
 
+function LoginSIP5 (user, pass) {
+  return false;
+}
 
-/* GET GENERAL INFO */
+function storeSessionKey(req, key, user) {
+    req.session.authed = true;
+    req.session.keypair = key;
+    req.session.email = user.email;
+    req.session.password = encrypt(SESSION_KEY, user.password);
+}
+
+function encrypt(key, data) {
+    var cipher = crypto.createCipher('aes-256-cbc', key);
+    var crypted = cipher.update(data, 'utf-8', 'hex');
+    crypted += cipher.final('hex');
+
+    return crypted;
+}
+
+function decrypt(key, data) {
+    var decipher = crypto.createDecipher('aes-256-cbc', key);
+    var decrypted = decipher.update(data, 'hex', 'utf-8');
+    decrypted += decipher.final('utf-8');
+
+    return decrypted;
+}
+
+var auth = function(req, res, next) {
+    if (req.session && req.session.authed)
+        return next();
+    else
+        console.log('Session NOT found');
+        return res.send({ status: 'fail', message: 'not logged in to DigiPulse network' });
+};
+
+/* LOGOUT */
+router.get('/logout',   function(req, res, next) {
+  req.session.destroy(function(err) {
+    return res.send({ status: 'success' });
+  });
+});
+
+
 router.get('/login/:user/:pass', function(req, res, next) {
 
+  /* This is the only stage where the password is needed in plaintext.
+  *  Once sent to the sessios, it get's encrypted by the SESSION_KEY.
+  */
+
   // SIP5 basic login
-
   var user = {email: req.params.user, password: req.params.pass};
-
   var client = storjlib.BridgeClient(DIGIPULSE_HUB, {basicAuth: user});
   var keypair = storjlib.KeyPair();
 
   client.addPublicKey(keypair.getPublicKey(), function(err) {
-  if (err) {
-    return res.send({ status: 'fail', message: err.message });
-  }
+    if (err) {
+      return res.send({ status: 'fail', message: err.message });
+    }
+    storeSessionKey(req, keypair.getPrivateKey(), user);
 
-  //storeSessionKey(req, keypair.getPrivateKey());
-  //res.send({ status: 'success', message: 'Login success', keypair: keypair });
-  console.log ('session stored as ' + req.session.keypair);
+    // Login to SIP6 after success from SIP5
+    // SIP 6 authed and loading vaults
+    storj = new Environment({
+     bridgeUrl: DIGIPULSE_HUB,
+     bridgeUser: req.session.email,
+     bridgePass: decrypt(SESSION_KEY, req.session.password),
+     encryptionKey: 'test',
+     logLevel: 4
+   });
+
+   storj.getBuckets(function(err, result) {
+     if (err) {
+       return res.send({ error: err.message});
+     }
+     return res.send({ status: 'success', result: result });
+     //storj.destroy();
+   });
   });
-
-  // Login to SIP6 after success from SIP5
-  // SIP 6 authed and loading vaults
-  storj = new Environment({
-   bridgeUrl: DIGIPULSE_HUB,
-   bridgeUser: user.email,
-   bridgePass: user.password,
-   encryptionKey: 'test',
-   logLevel: 4
- });
-
- storj.getBuckets(function(err, result) {
-   if (err) {
-     return res.send({ error: err.message,  storj: user });
-   }
-   return res.send({ result: result, storj: storj, keypair: keypair });
-   storj.destroy();
- });
-
-
-
 });
-
-
-
-
 
 /* GET GENERAL INFO */
 router.get('/', function(req, res, next) {
@@ -71,18 +114,18 @@ router.get('/', function(req, res, next) {
 });
 
 /* LIST ALL VAULTS */
-router.get('/vault', function(req, res, next) {
+router.get('/vault', auth, function(req, res, next) {
   storj.getBuckets(function(err, result) {
     if (err) {
       return console.error(err);
     }
     return res.send({ result: result });
-    storj.destroy();
+    //storj.destroy();
   });
 });
 
 /* CREATE VAULTS */
-router.get('/vault/create/:name', function(req, res, next) {
+router.get('/vault/create/:name', auth, function(req, res, next) {
   var vaultName = req.params.name;
 
   storj.createBucket(vaultName, function(err, result) {
@@ -94,8 +137,22 @@ router.get('/vault/create/:name', function(req, res, next) {
   });
 });
 
+/* LIST ALL FILES */
+router.get('/vault/:name', auth, function(req, res, next) {
+
+  var vaultName = req.params.name;
+
+  storj.listFiles(vaultName, function(err, result) {
+    if (err) {
+      return console.error(err);
+    }
+    return res.send({ result: result });
+    //storj.destroy();
+  });
+});
+
 /* Upload files */
-router.get('/vault/file/upload/:vault/:filepath', function(req, res, next) {
+router.get('/vault/file/upload/:vault/:filepath', auth, function(req, res, next) {
   var bucketId = req.params.vault;
   var fileP = req.params.filepath;
 
@@ -114,7 +171,7 @@ router.get('/vault/file/upload/:vault/:filepath', function(req, res, next) {
   });
 });
 
-router.get('/vault/file/download/:vault/:fileid', function(req, res, next) {
+router.get('/vault/file/download/:vault/:fileid', auth, function(req, res, next) {
 
   var bucketId = req.params.vault;
   var fileId = req.params.fileid;
