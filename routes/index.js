@@ -1,6 +1,12 @@
 var express = require('express');
 var router = express.Router();
 
+// SIP5
+var storjlib = require('storj-lib');
+var DIGIPULSE_HUB = 'http://alpha.digipulse.io:8080';
+var client;
+var keypair;
+
 // SIP6
 const { Environment } = require('storj');
 
@@ -11,27 +17,45 @@ var storj;
 /* GET GENERAL INFO */
 router.get('/login/:user/:pass', function(req, res, next) {
 
+  // SIP5 basic login
+
+  var user = {email: req.params.user, password: req.params.pass};
+
+  var client = storjlib.BridgeClient(DIGIPULSE_HUB, {basicAuth: user});
+  var keypair = storjlib.KeyPair();
+
+  client.addPublicKey(keypair.getPublicKey(), function(err) {
+  if (err) {
+    return res.send({ status: 'fail', message: err.message });
+  }
+
+  //storeSessionKey(req, keypair.getPrivateKey());
+  //res.send({ status: 'success', message: 'Login success', keypair: keypair });
+  console.log ('session stored as ' + req.session.keypair);
+  });
+
+
+  // SIP 6 authed and loading vaults
   storj = new Environment({
-   bridgeUrl: 'http://alpha.digipulse.io:8080',
+   bridgeUrl: DIGIPULSE_HUB,
    bridgeUser: req.params.user,
    bridgePass: req.params.pass,
    encryptionKey: 'test',
    logLevel: 4
  });
 
- return res.send({ result: getVaults(storj) });
+ storj.getBuckets(function(err, result) {
+   if (err) {
+     return res.send({ error: err.message,  storj: storj.bridgeUrl });
+   }
+   return res.send({ result: result, storj: storj, keypair: keypair });
+   storj.destroy();
+ });
+
+
 
 });
 
-function getVaults(storjEnv) {
-  storjEnv.getBuckets(function(err, result) {
-    if (err) {
-      return err;
-    }
-    return result;
-    storjEnv.destroy();
-  });
-}
 
 
 
