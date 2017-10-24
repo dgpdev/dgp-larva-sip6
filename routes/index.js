@@ -207,23 +207,6 @@ router.get('/vault/file/upload/:vault/:filepath', auth, function(req, res, next)
 router.get('/vault/file/download/:vault/:fileid', auth, function(req, res, next) {
 
 
-const bucketId = req.params.vault;
-const fileId = req.params.fileid;
-const downloadFilePath = '01.js';
-
-const state = storj.resolveFile(bucketId, fileId, downloadFilePath, {
-  progressCallback: function(progress, downloadedBytes, totalBytes) {
-    //console.log('progress:', progress)
-  },
-  finishedCallback: function(err) {
-    if (err) {
-      return console.error(err);
-    }
-    console.log('File download complete');
-  }
-});
-
-  /*
   var bucketId = req.params.vault;
   var fileId = req.params.fileid;
   var downloadFilePath = './test.js';
@@ -250,7 +233,7 @@ const state = storj.resolveFile(bucketId, fileId, downloadFilePath, {
       storj.destroy();
     }
   });
-  */
+
 });
 
 
