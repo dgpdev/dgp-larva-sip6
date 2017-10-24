@@ -1,0 +1,83 @@
+// Created by Steve on 18/08/2017.
+
+extends layout
+block content
+  include partials/navbar
+
+  .container
+    .card#DRIVE_SECTION
+      .card-body
+        .row-fluid
+          h3.card-title.mb-3
+            | Available vaults
+
+        form#uploadForm(style="display:none" ref='uploadForm' action='/uploadz' method='post' encType="multipart/form-data")
+          input#upload-input(type="file" name="uploads[]" multiple="multiple")
+          input#driveID(type="hidden" name="driveID" value="")
+          input(type="submit" value="Upload!")
+
+        .row-fluid.row_drivelist
+          .title-bar.colorful.green
+            h4.pull-left
+              | Vaults
+            div.pull-left.refresh
+              a.BTN_DRIVE_LIST.tt(title="Refresh" data-toggle="tooltip" data-placement="top")
+                i.fa.fa-refresh
+
+            //- .drive-creation-small.pull-right.open
+            //-   a.close-creation.pull-right(href="javascript:;" onClick="toggleCreation()" data-toggle="tooltip" title="Add vault" data-placement="top")
+            //-     i.fa.fa-close
+            //-   .pull-right.optional
+            //-     .input-group
+            //-       input#drive-name.form-control.form-control-sm(type="text" placeholder="Name of your new vault")
+            //-       span.input-group-btn
+            //-         button.btn.btn-sm.btn-success.text-white.BTN_ADD_DRIVE(type="button")
+            //-           | Create
+            .clearfix
+
+          .first-vault-creation.text-center
+            .to-the-moon
+              i.fa.fa-check
+            h5
+              | Congratulations! Now choose the name for your first vault.
+            .line
+            .row.justify-content-around.mt-3
+              .col-sm-6
+                input#drive-name.form-control.text-center.mb-3(type="text" placeholder="Name of your new vault")
+                button.btn.btn-success.text-white.BTN_ADD_DRIVE(type="button")
+                  | Create first vault
+
+          table#DRIVE_LIST.table
+
+
+        .row-fluid.row_filelist
+          .title-bar.colorful.purple
+            h4.pull-left
+              | Vault contents
+            div.pull-left.refresh
+              a.refresh-files.tt(title="Refresh" data-toggle="tooltip" data-placement="top")
+                i.fa.fa-refresh
+
+            .pull-right
+              a.close-file-list.pull-right(href="javascript:;" onClick="toggleFileList()" data-toggle="tooltip" title="Close vault" data-placement="top")
+                i.fa.fa-close
+            .clearfix
+
+          .remaining-size
+            .text-remainder(style="left:0%;")
+              span
+                small
+                  | Remaining free space&nbsp;
+                span#remaining-size
+                  | 423 Mb
+
+            .progress.mb-3
+              .progress-bar(role="progressbar" style="width: 0%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100")
+
+          table#FILE_LIST.table
+
+
+  <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+  <script src="../../javascripts/drivelogic.js"></script>

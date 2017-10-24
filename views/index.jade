@@ -1,5 +1,117 @@
 extends layout
-
 block content
-  h1= title
-  p Welcome to #{title}
+
+<div class="container">
+  <div class="row">
+    <div class="column">
+      h1= title
+      p Welcome to #{title}
+    </div>
+  </div>
+
+  h1 Drive, files and actions
+
+  <hr>
+
+  <div class="row">
+    <div class="column column-50"><p>Drive actions</p></div>
+    <div class="column column-25 right"><button class="button button-outline BTN_DRIVE_LIST">List drives</button></div>
+    <div class="column column-25 right"><button class="button button-outline upload-btn">Upload</button></div>
+    <input id="upload-input" type="file" name="uploads[]" multiple="multiple" style="display:none">
+  </div>
+
+  <div class="row row_drivelist">
+    <div class="column">
+      <table id="DRIVE_LIST">
+      </table>
+    </div>
+  </div>
+
+  <div class="row row_filelist">
+    <div class="column">
+      <table id="FILE_LIST">
+      </table>
+    </div>
+  </div>
+
+  <hr>
+
+  h1 Keypair & user actions
+
+  <hr>
+
+  p Authenticate with plaintext private key 2
+  <div class="row">
+    <div class="column column-75">
+      <input type="text" id="KEY_PLAIN" name="KEY_PLAIN" placeholder="Your private key" value="44ef9fae5ca355a44ff8b7d9a1cd9d725530d1b5d5faedbdd98450cdf1435b8c"></input>
+    </div>
+    <div class="column column-25 right">
+      <button class="button button-outline BTN_AUTH_PLAIN">Authenticate</button>
+    </div>
+  </div>
+
+  <hr>
+  p Authenticate with smart contract hash and sharing key
+
+  <div class="row">
+    <div class="column">
+      <input type="text" id="KEY_HASH" placeholder="Enter the hash received from the smart contract"></input>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="column column-75">
+      <input type="text" id="KEY_SHARING" placeholder="Enter the sharing keycode"></input>
+    </div>
+    <div class="column column-25 right">
+      <button class="button button-outline BTN_AUTH_SHARE" >Authenticate</button>
+    </div>
+  </div>
+
+  <hr>
+
+  p Generate hash and sharing key from your private keyfile
+  <div class="row">
+    <div class="column">
+      <input type="text" name="KEY_HASH_SHOW" placeholder="Enter the hash received from the smart contract" disabled></input>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="column column-75">
+      <input type="text" name="KEY_SHARING_SHOW" placeholder="Enter the sharing keycode" disabled></input>
+    </div>
+    <div class="column column-25 right">
+      <button class="button button-outline BTN_GENERATE_SHARE" id="BTN_SHARE">Authenticate</button>
+    </div>
+  </div>
+
+  <hr>
+
+  p Register new users
+  <div class="row user_register">
+    <div class="column column-40">
+      <input type="email" id="USER_EMAIL" placeholder="Email"></input>
+    </div>
+    <div class="column column-40">
+      <input type="password" id="USER_PASS" placeholder="Password"></input>
+    </div>
+    <div class="column right">
+      <button class="button button-outline BTN_REGISTER right">submit</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="column column-60">
+      <p>Please check your inbox and activate your account.</p>
+    </div>
+    <div class="column  right">
+      <button class="button button-outline BTN_GENERATE_SHARE right" id="BTN_SHARE" disabled>generate</button>
+    </div>
+  </div>
+</div>
+
+<script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script src="../../javascripts/indexlogic.js"></script>

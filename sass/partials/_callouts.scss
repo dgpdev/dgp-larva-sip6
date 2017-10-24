@@ -1,0 +1,56 @@
+.bs-callout {
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid $gray-200;
+    border-left-width: 5px;
+    border-radius: 3px;
+}
+.bs-callout h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+.bs-callout p:last-child {
+    margin-bottom: 0;
+}
+.bs-callout code {
+    border-radius: 3px;
+}
+.bs-callout+.bs-callout {
+    margin-top: -5px;
+}
+.bs-callout-default {
+    border-left-color: $gray-600;
+}
+.bs-callout-default h4 {
+    color: $gray-600;
+}
+.bs-callout-primary {
+    border-left-color: $blue;
+}
+.bs-callout-primary h4 {
+    color: $blue;
+}
+.bs-callout-success {
+    border-left-color: $green;
+}
+.bs-callout-success h4 {
+    color: $green;
+}
+.bs-callout-danger {
+    border-left-color: $red;
+}
+.bs-callout-danger h4 {
+    color: $red;
+}
+.bs-callout-warning {
+    border-left-color: $yellow;
+}
+.bs-callout-warning h4 {
+    color: $yellow;
+}
+.bs-callout-info {
+    border-left-color: $cyan;
+}
+.bs-callout-info h4 {
+    color: $cyan;
+}

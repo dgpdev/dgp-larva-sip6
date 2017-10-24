@@ -1,0 +1,84 @@
+h4.card-title
+  | Access to existing accounts
+
+ul#pills-loginoptions.nav.nav-pills.nav-fill.mb-3(role="tablist")
+  li.nav-item
+    a#pills-home-tab.nav-link.active(data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-expanded="true")
+      | Email &amp; Password
+
+  li.nav-item
+    a#pills-profile-tab.nav-link(data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-expanded="true")
+      | Private key
+
+  li.nav-item
+    a#pills-another-tab.nav-link(data-toggle="pill" href="#pills-another" role="tab" aria-controls="pills-another" aria-expanded="true")
+      | Share Hash &amp; Public key
+
+
+#pills-loginoptionsContent.tab-content
+  #pills-home.tab-pane.fade.show.active(role="tabpanel" aria-labelledby="pills-home-tab")
+    form.credential-access.login-method(method="GET")
+      p.card-text
+        | Authenticate with a&nbsp;
+        strong login and password (only in alpha).
+
+      .form-group
+        label(for="EMAIL_LOGIN")
+          | Email address:
+        input.form-control.minlength#EMAIL_LOGIN(type="text")
+
+      .form-group
+        label(for="PASSWORD_LOGIN")
+          | Password:
+        input.form-control.minlength#PASSWORD_LOGIN(type="password")
+
+      button.btn.btn-primary.disabled.BTN_AUTH_LOGIN(href="#" disabled)
+        | Authenticate
+
+
+  #pills-profile.tab-pane.fade(role="tabpanel" aria-labelledby="pills-profile-tab")
+    form(method="GET")
+      p.card-text
+        | Authenticate with&nbsp;
+        strong plain text private&nbsp;
+        | key
+
+      input.form-control.mb-3.minlength#KEY_PLAIN(type="text" name="KEY_PLAIN" placeholder="Your private key" value="")
+
+    //- section#AUTH_SECTION
+    //- .row-fluid
+    //-   .column.column-75
+    //-     p Login with the .key file stored on your computer&nbsp;
+    //-       i (Not active)
+
+    //-   .column.column-25.right
+    //-     button.btn
+    //-       | Authenticate
+
+    //-   input#upload-input(type="file" name="uploads[]" multiple="multiple" style="display:none")
+
+    a.btn.btn-primary.disabled.BTN_AUTH_PLAIN(href="#")
+      | Authenticate
+
+
+  #pills-another.tab-pane.fade(role="tabpanel" aria-labelledby="pills-another-tab")
+    form.hash-access.login-method
+      p.card-text
+        | Authenticate with a&nbsp;
+        strong hash and sharing key&nbsp;
+        | received from the smart contract.
+
+      .form-group
+        label(for="KEY_HASH")
+          | Public hash received from the smart contract:
+        input.form-control.minlength#KEY_HASH(type="text")
+        small.form-text.text-muted
+          | Enter the hash received from the smart contract
+
+      .form-group
+        label(for="KEY_SHARING")
+          | Sharing keycode:
+        input.form-control.minlength#KEY_SHARING(type="text")
+
+      button.btn.btn-primary.disabled.BTN_AUTH_SHARE(href="#" disabled)
+        | Authenticate

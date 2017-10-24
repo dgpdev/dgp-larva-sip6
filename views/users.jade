@@ -1,0 +1,32 @@
+extends layout
+block content
+  .branding.login
+    a(href="https://www.digipulse.io")
+      img.logo(src="/images/wh_logo_only.png" width="160")
+
+  div.container
+    section#AUTH_SECTION
+      .login-wrap
+        ul.nav.nav-pills.nav-fill.selection.mb-3
+          li.nav-item
+            a.nav-link.active(href="#logins")
+              | Login
+
+          li.nav-item
+            a.nav-link(href="#signup")
+              | Sign up
+
+        .card
+          .card-body
+            .tab-content#login-tabs
+              .tab-pane.fade.show.active#logins
+                include partials/logins
+
+              .tab-pane.fade#signup
+                include partials/new_user
+
+
+  <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+  <script src="../../javascripts/userlogic.js"></script>

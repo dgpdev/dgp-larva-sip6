@@ -1,3 +1,4 @@
+var sass = require('node-sass-middleware');
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -9,7 +10,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
- 
+
 var session = require('express-session');
 
 // view engine setup
@@ -27,7 +28,21 @@ app.use(session({
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+//app.use(fileUpload());
+app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
+app.use('/js', express.static(__dirname + '/node_modules/popper.js/dist'));
+//app.use('/clipboard', express.static(__dirname + '/node_modules/clipboard/dist'));
 app.use(cookieParser());
+
+app.use(
+  sass({
+    src: __dirname + '/sass/main',
+    dest: __dirname + '/public/stylesheets',
+    prefix:  '/stylesheets',
+    debug: true
+  })
+);
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);

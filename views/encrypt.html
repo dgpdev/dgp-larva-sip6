@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bootstrap 3 Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap core CSS -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.js"></script>
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+
+      <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+          <h3> Key encryption </h3>
+          <p>You must set a passphrase to protect your private keyfiles.</p>
+          <input type="password" id="enckey" />
+          <button name="sendkey" class="sendkey">Send</button>
+        </div>
+      </div>
+
+    </div><!-- /.container -->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+    <script>
+      $('.sendkey').on('click', function(event) {
+        var data = {};
+        data.salt = $('#enckey').val();
+
+        $.ajax({
+          method: 'POST',
+          url: '/larva/encrypt/keypair',
+          data: JSON.stringify(data),
+          contentType:  'application/json',
+          processData: false
+        }).done(function(response) {
+          if (response.status === 'fail') {
+            // Error handling
+            toastr.error(response.message, 'Error occured!')
+            $('#AUTH_SECTION .card').unblock();
+          }
+          if (response.status === 'success') {
+            window.location = '/drive/';
+          }
+
+        }).error(function(error) {
+          $('#AUTH_SECTION .card').unblock();
+        })
+      });
+    </script>
+  </body>
+</html>

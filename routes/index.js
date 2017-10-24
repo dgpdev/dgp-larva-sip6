@@ -13,19 +13,16 @@ var crypto = require('crypto');
 // SIP5
 var storjlib = require('storj-lib');
 var DIGIPULSE_HUB = 'http://alpha.digipulse.io:8080';
-var SESSION_KEY = 'x6mJac43QZY93bCGu69XX9h8hFB2T5Z2pdpafrc52Gu7CfnQHPYE5KCY5acD4YB46SfCJSQK8699M8NtBbaFeCMp2gPMK2pWSUEZwxuTqYMwV34XE8fv9ar3tuBfz3QRr7vqAM8c6Fb72EheKR4UW5U79WMJ7d7RFjzFt9CcHkVnTZmBdJT7sEaexbMfqmzNcEvaxa9WBrZBBjn8UNe8Sd9sckEpccKjE4rZsUJSBnDnTnB8U5UquXMs7X7KkSbM'
 var client;
 var keypair;
 
 // SIP6
 const { Environment } = require('storj');
-
-// SIP6
 var storj;
 
-function LoginSIP5 (user, pass) {
-  return false;
-}
+// SESSION data
+var SESSION_KEY = 'x6mJac43QZY93bCGu69XX9h8hFB2T5Z2pdpafrc52Gu7CfnQHPYE5KCY5acD4YB46SfCJSQK8699M8NtBbaFeCMp2gPMK2pWSUEZwxuTqYMwV34XE8fv9ar3tuBfz3QRr7vqAM8c6Fb72EheKR4UW5U79WMJ7d7RFjzFt9CcHkVnTZmBdJT7sEaexbMfqmzNcEvaxa9WBrZBBjn8UNe8Sd9sckEpccKjE4rZsUJSBnDnTnB8U5UquXMs7X7KkSbM'
+
 
 function storeSessionKey(req, key, user) {
     req.session.authed = true;
@@ -55,7 +52,8 @@ var auth = function(req, res, next) {
         return next();
     else
         console.log('Session NOT found');
-        return res.send({ status: 'fail', message: 'not logged in to DigiPulse network' });
+        //return res.send({ status: 'fail', message: 'not logged in to DigiPulse network' });
+        res.render('users', { title: 'Testament dashboard' });
 };
 
 /* LOGOUT */
@@ -66,14 +64,14 @@ router.get('/logout',   function(req, res, next) {
 });
 
 
-router.get('/login/:user/:pass', function(req, res, next) {
+router.post('/login', function(req, res, next) {
 
   /* This is the only stage where the password is needed in plaintext.
   *  Once sent to the sessios, it get's encrypted by the SESSION_KEY.
   */
 
   // SIP5 basic login
-  var user = {email: req.params.user, password: req.params.pass};
+  var user = {email: req.body.user, password: req.body.pass};
   var client = storjlib.BridgeClient(DIGIPULSE_HUB, {basicAuth: user});
   var keypair = storjlib.KeyPair();
 
@@ -104,13 +102,16 @@ router.get('/login/:user/:pass', function(req, res, next) {
 });
 
 /* GET GENERAL INFO */
-router.get('/', function(req, res, next) {
-  storj.getInfo(function(err, result) {
+router.get('/', auth, function(req, res, next) {
+  res.render('drives', { title: 'Inheritance API' });
+
+  /*storj.getInfo(function(err, result) {
     if (err) {
       return console.error(err);
     }
     return res.send({ result: result });
   });
+  */
 });
 
 /* LIST ALL VAULTS */
@@ -128,7 +129,7 @@ router.get('/vault', auth, function(req, res, next) {
     if (err) {
       return console.error(err);
     }
-    return res.send({ result: result });
+    return res.send({ status: 'success', result: result });
     //storj.destroy();
   });
 });

@@ -2,6 +2,37 @@ doctype html
 html
   head
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
+    //- link(rel='stylesheet', href='/stylesheets/style.css')
+    link(href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css", rel="stylesheet", integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN", crossorigin="anonymous")
+    link(href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css")
+    link(rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css")
+    link(rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+
+  body.lavra
     block content
+
+    include partials/footer
+
+  script(type="text/javascript" src="/js/umd/popper.min.js")
+  script(type="text/javascript" src="/js/bootstrap.js")
+
+
+
+  //- Google analytics
+  script(async src="https://www.googletagmanager.com/gtag/js?id=UA-108344479-1")
+  script.
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-108344479-1');
+
+
+  //- Intercom
+  script.
+    window.intercomSettings = {
+      app_id: "jwqiimnj"
+    };
+
+    (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/jwqiimnj';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()

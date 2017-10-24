@@ -1,0 +1,82 @@
+// Created by Steve on 18/08/2017.
+
+extends layout
+block content
+  include partials/navbar
+
+  .container
+    .card#inheritance
+      .card-body
+        .row-fluid
+          ol.breadcrumb
+            li.breadcrumb-item
+              a(href="/drive")
+                | Vaults
+            li.breadcrumb-item.active
+              | Inherit
+
+          h3 You are about to make a drive inheritable.
+          p
+            | This means will an encrypted version of your keypair will be published publicly on our smart contract.
+
+        .row-fluid
+          ul.nav.nav-pills.nav-justified.mb-3(role="tablist")
+            li.nav-item
+              a#pills-home-tab.nav-link.active(data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-expanded="true")
+                | Encrypt the keys using sharing key
+                br
+                small
+                  | Most secure
+
+            li.nav-item
+              a.nav-link.disabled
+                | Encrypt using inheritors data
+                br
+                small
+                  | Under development
+
+          .row-fluid.text-center.instructions
+            p
+              | Upon encrypting keys, you will be asked to store them in secure manner, since they allow access to the files stored on your vault.
+            button.button.btn.btn-success.text-white.ENC_SHARING
+              | Encrypt keys using sharing key
+
+
+          section#INHERIT_STEP_2(style="display:none")
+            .bs-callout.bs-callout-warning
+              h4
+                | Developers note regarding alpha (Larva release)
+              p
+                | To mimic the smart contract, pass the&nbsp;
+                strong sharing key + public hash&nbsp;
+                | to the benificiary. For testing purposes the Ethereum code is not yet implemented.
+
+            p
+              | The sharing (private) key must be shared with the benificiary before death. This is intended solely for the purpose of gaining access to the files.
+
+            .input-group
+              span.input-group-btn
+                button.btn.btn-primary.copy-me(type="button" data-clipboard-target="#hashkey")
+                  i.fa.fa-clipboard(aria-hidden="true")
+              input#hashkey(type="text" readonly class="form-control" placeholder="Search for...")
+
+            hr
+
+            p
+              | This is the public key that our smartcontract will register. This key is visible for everyone.
+
+            .input-group
+              span.input-group-btn
+                button.btn.btn-primary.copy-me(type="button" data-clipboard-target="#pubhash")
+                  i.fa.fa-clipboard(aria-hidden="true")
+              input#pubhash(type="text" readonly class="form-control" placeholder="Search for...")
+
+            .mt-3.text-center
+              a.btn.btn-success.text-white(href="/drive")
+                | I have stored the keys
+
+
+    <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="../../javascripts/drivelogic.js"></script>

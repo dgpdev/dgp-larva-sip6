@@ -1,0 +1,31 @@
+extends layout
+block content
+  .branding.login
+    a(href="https://www.digipulse.io")
+      img.logo(src="/images/wh_logo_only.png" width="160")
+
+  div.container
+    section.email-verification
+        .card
+          .card-body
+            .verification-progress
+              .loader
+                |Loading...
+              p
+                | Your email is being verified
+
+            .verification-complete
+              .to-the-moon
+                i.fa.fa-check
+
+              h4.text-center
+                | Success!
+
+              p.text-center
+                | You can close this window now and return back to the DigiPulse.io
+
+
+
+  <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+  <script src="../../javascripts/email-verification.js"></script>

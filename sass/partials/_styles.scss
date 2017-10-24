@@ -1,0 +1,345 @@
+@import 'variables';
+@import url('https://fonts.googleapis.com/css?family=Lato:200,300,400,700');
+
+html {
+  height: 100%;
+}
+
+body {
+  background: #0071bc;
+  background: -moz-linear-gradient(top, #0071bc 0%, #0056b2 100%);
+  background: -webkit-linear-gradient(top, #0071bc 0%,#0056b2 100%);
+  background: linear-gradient(to bottom, #0071bc 0%,#0056b2 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0071bc', endColorstr='#0056b2',GradientType=0 );
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+  min-height:100%;
+
+  .branding {
+    text-align: center;
+
+    img.logo {
+      padding:30px 0;
+    }
+  }
+
+  .navbar {
+    padding:20px 0;
+
+    img.logo {
+
+    }
+
+    .actions {
+      a {
+        color:$white;
+        padding:5px 10px;
+        border-radius:3px;
+        -webkit-transition: all 0.2s;
+        transition: all 0.2s;
+
+        i {
+          margin:0 5px;
+        }
+
+        &:hover {
+          text-decoration: none;
+          background-color:$white;
+          color:$blue;
+        }
+      }
+    }
+  }
+
+  .footer {
+    margin-top:30px;
+    font-size:0.8rem;
+
+    a {
+      color:$white;
+    }
+  }
+}
+
+.login-wrap {
+  max-width:480px;
+  width:100%;
+  margin:0 auto;
+
+  .selection {
+    & > li {
+
+      & > a {
+        border: 1px solid $white;
+        color: $white;
+
+        &.active {
+          background-color: $white;
+          color: $blue;
+        }
+
+        &:hover {
+          background-color: $white;
+          color: $blue;
+        }
+      }
+
+      &:first-child a {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      &:last-child a {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
+
+  }
+
+  #logins {
+    #pills-loginoptions {
+      border-radius: 3px;
+      overflow: hidden;
+      border:1px solid $blue;
+    }
+    .nav-item {
+      .nav-link {
+        padding: 3px 10px;
+        border-radius:0;
+        font-size: 12px;
+      }
+    }
+
+    .nav-link.active {
+      background-color:$white;
+      color:$blue;
+
+      &:hover {
+        background-color:$blue;
+        color:$white;
+      }
+    }
+  }
+
+  .spacer {
+    margin:30px 0;
+    border-color:$gray-300;
+  }
+}
+
+.email-verification {
+  max-width:480px;
+  width:100%;
+  margin:0 auto;
+
+  .verification-progress {
+    text-align:center;
+  }
+
+  .verification-complete {
+    display:none;
+    text-align:center;
+
+    i {
+      font-size:100px;
+      color:$green;
+      margin-bottom:10px;
+    }
+  }
+}
+
+.blockUI {
+  &.blockOverlay {
+    width:100%;
+    bottom:0;
+    top:0;
+    // background-color:rgba(0,0,0,0.2);
+    background-color:rgba(255,255,255,0.75);
+  }
+
+  &.blockMsg {
+    min-width:160px;
+    border:none;
+    border-radius:3px;
+    background-color:#FFF;
+    padding:15px;
+    text-align: center;
+    box-shadow: 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.3);
+
+    p {
+      line-height:1;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      small {
+        margin-bottom: 10px;
+        display: block;
+      }
+    }
+  }
+}
+
+#DRIVE_SECTION {
+  .drive-creation-small {
+    .close-creation {
+      font-size:20px;
+      padding:0 10px;
+      color:$green;
+      -webkit-transition: all 0.2s;
+      transition: all 0.2s;
+    }
+
+    span.help {
+      padding:5px 0;
+      display:inline-block;
+    }
+
+    .optional {
+      display: none;
+
+      .btn, input {
+        border-color:$green;
+      }
+    }
+
+    &.open {
+      .close-creation {
+        transform:rotate(45deg);
+      }
+    }
+  }
+
+  .title-bar {
+    .refresh {
+      font-size:18px;
+
+      .BTN_DRIVE_LIST, .refresh-files {
+        display:block;
+        margin:1px 10px 0;
+
+        &:hover {
+          -webkit-animation:spin 1s linear infinite;
+          -moz-animation:spin 1s linear infinite;
+          animation:spin 1s linear infinite;
+        }
+      }
+    }
+  }
+
+  .colorful {
+    padding-bottom:5px;
+    margin: 30px 0 20px;
+    border-bottom:2px solid #CCC;
+
+    &.purple {
+      border-bottom-color: $purple;
+    }
+
+    &.green {
+      border-bottom-color: $green;
+    }
+  }
+
+  .row_drivelist {
+    .to-the-moon {
+      font-size:130px;
+      line-height: 1;
+      border-radius: 50%;
+      border:5px solid;
+      border-color:$green;
+      color:$green;
+      display: inline-block;
+      width: 200px;
+      height: 200px;
+      line-height: 200px;
+      margin-bottom: 30px;
+
+      i {
+        display: block;
+        height: 200px;
+        padding: 32px 0px 0 0;
+      }
+    }
+
+    .line {
+      display:inline-block;
+      height:3px;
+      background-color:$purple;
+      width:60px;
+    }
+
+    .btn-getdrive {
+      &.hide {
+        display:none;
+      }
+    }
+  }
+
+  .row_filelist {
+    display:none;
+
+    .close-file-list {
+      font-size:20px;
+      padding:0 10px;
+      color:$purple;
+      -webkit-transition: all 0.2s;
+      transition: all 0.2s;
+    }
+
+    .remaining-size {
+      position:relative;
+      padding-top:24px;
+
+      .text-remainder {
+        position:absolute;
+        top:0;
+        border-left:1px solid $blue;
+        margin-left: -1px;
+        height:25px;
+        -webkit-transition: all 0.2s;
+        transition: all 0.2s;
+
+        & > span {
+          position:absolute;
+          top:0;
+          padding: 0 5px 5px;
+          line-height: 20px;
+          -webkit-transition: all 0.2s;
+          transition: all 0.2s;
+          display: inline-block;
+          white-space: nowrap;
+
+          &.left {
+            text-align: left;
+            left:0;
+          }
+
+          &.right {
+            text-align: right;
+            right:0;
+          }
+
+          #remaining-size {
+            font-weight: bold;
+          }
+        }
+      }
+      .progress {
+        height:5px;
+      }
+    }
+  }
+}
+
+#inheritance {
+  .nav-link.disabled:hover {
+    background-color: $gray-200;
+    cursor:not-allowed;
+  }
+}
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }

@@ -1,0 +1,27 @@
+h3 Create an account
+p Sign up and confirm your email address to proceed
+
+section#USERS_REG_SECTION
+  .row-fluid
+    form.user_register
+      .form-group
+        label(for="USER_EMAIL")
+          | Your email address:
+        input.form-control.minlength#USER_EMAIL(type="email" placeholder="Email")
+
+      .form-group
+        label(for="USER_PASS")
+          | Set password for your account:
+        input.form-control.minlength#USER_PASS(type="password" placeholder="Password")
+
+      .column
+        button.btn.btn-primary.disabled.BTN_REGISTER(disabled)
+          | Sign up
+
+  //- .row-fluid
+  //-   .column.column-60
+  //-     | Please check your inbox and activate your account.
+
+  //-   .column
+  //-     button.btn.BTN_GENERATE_SHARE#BTN_SHARE(disabled="disabled")
+  //-       | generate
