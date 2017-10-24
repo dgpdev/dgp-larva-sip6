@@ -30,3 +30,9 @@ The code runs on both the SIP5 as the SIP6 packages provided by Storj.
 To distinct both versions, different names have been used. For the SIP5 code, we declare `var storjlib = require('storj-lib');`
 
 To declare the SIP6 package, we use `const { Environment } = require('storj');`
+
+
+## SIP workflow
+
+
+![alt text](https://github.com/dgpdev/dgp-larva-sip6/blob/master/SIP.jpg)
