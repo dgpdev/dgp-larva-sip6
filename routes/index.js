@@ -19,16 +19,19 @@ router.get('/login/:user/:pass', function(req, res, next) {
    logLevel: 4
  });
 
- storj.getBuckets(function(err, result) {
-   if (err) {
-     console.log(err);
-     return  (err);
-   }
-   return res.send({ result: result, storj: storj });
-   storj.destroy();
- });
+ return res.send({ result: getVaults(storj) });
 
 });
+
+function getVaults(storjEnv) {
+  storjEnv.getBuckets(function(err, result) {
+    if (err) {
+      return err;
+    }
+    return result;
+    storjEnv.destroy();
+  });
+}
 
 
 
