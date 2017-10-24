@@ -2,7 +2,7 @@ Digipulse Larva SIP6
 --------------------
 
 ## Testing the code
-**For testing purposes the code only accepts `GET`commands. **
+**For testing purposes the code only accepts `GET`commands.**
 
 If **authentication** is needed, please use it inside the url.
 For example: `/login/email/pass` for login.
