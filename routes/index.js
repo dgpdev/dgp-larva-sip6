@@ -34,7 +34,7 @@ router.get('/login/:user/:pass', function(req, res, next) {
   console.log ('session stored as ' + req.session.keypair);
   });
 
-
+  // Login to SIP6 after success from SIP5
   // SIP 6 authed and loading vaults
   storj = new Environment({
    bridgeUrl: DIGIPULSE_HUB,
