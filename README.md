@@ -41,4 +41,6 @@ All file manipulations **must** be handled by the SIP6 package. This flow will s
 
 ## Security improvements
 
-The password will be sent only **once** to the server during login where it's encrypted using a 256 character passphrase even before it's stored in the user session. The password will then be decrypted serverside, away from the dangerous worldwide web.
+The password will be sent only **once** to the server during login where it's encrypted using a 256 character passphrase even before it's stored in the user session. From this point on, the user session is secured.
+
+The password will then be decrypted serverside, away from the dangerous worldwide web.
