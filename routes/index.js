@@ -38,15 +38,15 @@ router.get('/login/:user/:pass', function(req, res, next) {
   // SIP 6 authed and loading vaults
   storj = new Environment({
    bridgeUrl: DIGIPULSE_HUB,
-   bridgeUser: req.params.user,
-   bridgePass: req.params.pass,
+   bridgeUser: user.email,
+   bridgePass: user.password,
    encryptionKey: 'test',
    logLevel: 4
  });
 
  storj.getBuckets(function(err, result) {
    if (err) {
-     return res.send({ error: err.message,  storj: storj.bridgeUrl });
+     return res.send({ error: err.message,  storj: user });
    }
    return res.send({ result: result, storj: storj, keypair: keypair });
    storj.destroy();
