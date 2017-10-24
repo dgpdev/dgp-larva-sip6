@@ -115,6 +115,15 @@ router.get('/', function(req, res, next) {
 
 /* LIST ALL VAULTS */
 router.get('/vault', auth, function(req, res, next) {
+
+  storj = new Environment({
+   bridgeUrl: DIGIPULSE_HUB,
+   bridgeUser: req.session.email,
+   bridgePass: decrypt(SESSION_KEY, req.session.password),
+   encryptionKey: 'test',
+   logLevel: 4
+ });
+
   storj.getBuckets(function(err, result) {
     if (err) {
       return console.error(err);
@@ -127,6 +136,14 @@ router.get('/vault', auth, function(req, res, next) {
 /* CREATE VAULTS */
 router.get('/vault/create/:name', auth, function(req, res, next) {
   var vaultName = req.params.name;
+
+  storj = new Environment({
+   bridgeUrl: DIGIPULSE_HUB,
+   bridgeUser: req.session.email,
+   bridgePass: decrypt(SESSION_KEY, req.session.password),
+   encryptionKey: 'test',
+   logLevel: 4
+ });
 
   storj.createBucket(vaultName, function(err, result) {
     if (err) {
@@ -142,6 +159,14 @@ router.get('/vault/:name', auth, function(req, res, next) {
 
   var vaultName = req.params.name;
 
+  storj = new Environment({
+   bridgeUrl: DIGIPULSE_HUB,
+   bridgeUser: req.session.email,
+   bridgePass: decrypt(SESSION_KEY, req.session.password),
+   encryptionKey: 'test',
+   logLevel: 4
+ });
+
   storj.listFiles(vaultName, function(err, result) {
     if (err) {
       return console.error(err);
@@ -155,6 +180,14 @@ router.get('/vault/:name', auth, function(req, res, next) {
 router.get('/vault/file/upload/:vault/:filepath', auth, function(req, res, next) {
   var bucketId = req.params.vault;
   var fileP = req.params.filepath;
+
+  storj = new Environment({
+   bridgeUrl: DIGIPULSE_HUB,
+   bridgeUser: req.session.email,
+   bridgePass: decrypt(SESSION_KEY, req.session.password),
+   encryptionKey: 'test',
+   logLevel: 4
+ });
 
   storj.storeFile(bucketId, fileP, {
   filename: "test.js",
@@ -173,9 +206,35 @@ router.get('/vault/file/upload/:vault/:filepath', auth, function(req, res, next)
 
 router.get('/vault/file/download/:vault/:fileid', auth, function(req, res, next) {
 
+
+const bucketId = req.params.vault;
+const fileId = req.params.fileid;
+const downloadFilePath = '01.js';
+
+const state = storj.resolveFile(bucketId, fileId, downloadFilePath, {
+  progressCallback: function(progress, downloadedBytes, totalBytes) {
+    //console.log('progress:', progress)
+  },
+  finishedCallback: function(err) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log('File download complete');
+  }
+});
+
+  /*
   var bucketId = req.params.vault;
   var fileId = req.params.fileid;
   var downloadFilePath = './test.js';
+
+  storj = new Environment({
+   bridgeUrl: DIGIPULSE_HUB,
+   bridgeUser: req.session.email,
+   bridgePass: decrypt(SESSION_KEY, req.session.password),
+   encryptionKey: 'test',
+   logLevel: 4
+ });
 
   storj.resolveFile(bucketId, fileId, downloadFilePath, {
     progressCallback: function(progress, downloadedBytes, totalBytes) {
@@ -187,9 +246,11 @@ router.get('/vault/file/download/:vault/:fileid', auth, function(req, res, next)
         return console.error(err);
       }
       console.log('File download complete');
+      //return res.send({ result: 'fileId' });
       storj.destroy();
     }
   });
+  */
 });
 
 
