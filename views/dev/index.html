@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bootstrap 3 Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.js"></script>
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <a href="../logout">Click here to logout</a>
+      <div class="panel panel-default col-md-6 col-md-offset-3">
+        <div class="panel-body">
+            <table id="DRIVE_LIST" name="DRIVE_LIST">
+            </table>
+
+            <table id="FILE_LIST" name="FILE_LIST">
+            </table>
+        </panel>
+      </div>
+    </div>
+  </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <script>
+
+    $('#DRIVE_LIST').on( 'click', '.btn-getdrive', function () {
+      listFiles($(this).attr('data-drive'));
+    });
+    /* Get the drives available */
+      listDrives();
+
+      function listDrives() {
+        $.ajax({
+          method: 'GET',
+          url: '/dev/vault'
+        }).done(function(buckets) {
+          if (buckets.status === 'fail') {
+            // Error handling & dirty fix for hiding error when no drives have been created
+            if ($('#DRIVE_LIST tr').length != 0) {
+              toastr.error(buckets.message, 'Error occured!')
+            }
+
+          }
+          var primary_drive;
+          if (buckets.status === 'success') {
+            // Error handling
+            var table = $("#DRIVE_LIST");
+            table.empty();
+            table.append("<thead><tr><td>Vault name</td><td>Vault ID</td><td class=\"text-right\">Actions</td></tr>");
+            table.append("<tbody>");
+
+            buckets.result.forEach(function(bucket) {
+              table.append("<tr valign='middle'><td><strong>" + bucket.name + "</strong></td><td class='driveid'>" + bucket.id +"</td><td class=\"text-right\"> " +
+                  "<button class='btn btn-outline-primary btn-sm mb-1 btn-getdrive' data-drive='"+ bucket.id +"'>View contents</button> " +
+                  "<button class='btn btn-outline-primary btn-sm mb-1 btn-up' data-drive='" + bucket.id +"'>Add files</button> " +
+                  "<button class='btn btn-primary btn-sm mb-1 btn-inherit-drive'>Inherit</button> " +
+                  "<button class='btn btn-danger btn-sm mb-1 btn-trash'><i class='fa fa-trash-o' aria-hidden='true'></i></button> " +
+                  "</td></tr>");
+              primary_drive = bucket.id;
+            });
+            table.append("</tbody>");
+
+          }
+        })
+      }
+
+      function listFiles(driveID) {
+        var data = {};
+        var fileSize = 0;
+        data.driveID = driveID;
+        data.msg = 'none';
+
+        console.log('requesting drive ' + driveID);
+        //$('.refresh-files').attr('data-drive', driveID);
+        $.ajax({
+          method: 'POST',
+          url: '/dev/vault',
+          data: JSON.stringify(data),
+          contentType:  'application/json',
+          processData: false
+        }).done(function(bucketsWithFiles) {
+          if (bucketsWithFiles.status === 'fail') {
+              console.error(bucketsWithFiles.message, 'Error occured!')
+          }
+          if (bucketsWithFiles.status === 'success') {
+
+
+            var table = $("#FILE_LIST");
+            table.empty();
+
+            table.append("<thead><tr><td>Filename</td><td>MIME</td><td class=\"text-right\">Action</td></tr>");
+            table.append("<tbody>");
+
+            bucketsWithFiles.files.reverse().forEach(function(file) {
+              //console.log(bucket);
+              table.append("<tr><td class='filenames'><strong>" + file.filename + "</strong></td><td>" + file.filename.split('.').pop() + "</td> " +
+                  "<td class=\"text-right\"><button class='btn btn-success download text-white btn-sm' data-mime='"+ file.filename.split('.').pop() +"' data-id='"+ file.id +"' data-drive='"+ file.bucket +"' data-filename='"+ file.filename +"'> " +
+                  "<i class='fa fa-download' aria-hidden='true'></i></button> " +
+                  "<button class='btn btn-danger text-white btn-sm' onClick='deleteFile(this);' data-id='"+ file.id +"' data-drive='"+ file.bucket +"'> " +
+                  "<i class='fa fa-trash' aria-hidden='true'></i></button></td> " +
+                  "</tr>");
+              fileSize += file.size;
+            });
+            table.append("</tbody>");
+          }
+        })
+      }
+
+
+      function add3Dots(string, limit) {
+        var dots = "...";
+        if(string.length > limit)
+        {
+          // you can also use substr instead of substring
+          string = string.substring(0,limit) + dots;
+        }
+
+        return string;
+      }
+    </script>
+  </body>
+</html>

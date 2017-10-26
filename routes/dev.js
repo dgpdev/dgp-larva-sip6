@@ -91,7 +91,8 @@ var auth = function(req, res, next) {
         return next();
     else
         console.log('Session NOT found');
-        return res.send({ status: 'fail', message: 'not logged in to DigiPulse network' });
+        return res.render('dev/login');
+        //return res.send({ status: 'fail', message: 'not logged in to DigiPulse network' });
 };
 
 /* LOGOUT */
@@ -101,19 +102,24 @@ router.get('/logout',   function(req, res, next) {
   });
 });
 
-router.get('/login/:user/:pass', function(req, res, next) {
+
+router.post('/login', function(req, res, next) {
 
   /* This is the only stage where the password is needed in plaintext.
   *  Once sent to the sessios, it get's encrypted by the SESSION_KEY.
   */
 
   // SIP5 basic login
-  var user = {email: req.params.user, password: req.params.pass};
+  var user = {email: req.body.user, password: req.body.pass};
+  console.log(user);
+
+
   var client = storjlib.BridgeClient(DIGIPULSE_HUB, {basicAuth: user});
   var keypair = storjlib.KeyPair();
 
   client.addPublicKey(keypair.getPublicKey(), function(err) {
     if (err) {
+      req.session.destroy();
       return res.send({ status: 'fail', message: err.message });
     }
     storeSessionKey(req, keypair.getPrivateKey(), user);
@@ -130,25 +136,23 @@ router.get('/login/:user/:pass', function(req, res, next) {
 
    storj.getBuckets(function(err, result) {
      if (err) {
-       return res.send({ error: err.message});
+       req.session.destroy();
+       return res.send({  status: 'fail', message: err.message});
      }
      // UX return
-     return res.render('index', {result: result});
+     //return res.render('index', {result: result});
      // PLAIN TEST RETURN
-     //return res.send({ status: 'success', result: result });
+     return res.send({ status: 'success', message: 'Login success' });
    });
   });
 });
 
 /* GET GENERAL INFO */
 router.get('/', auth, function(req, res, next) {
-  storj.getInfo(function(err, result) {
-    if (err) {
-      return console.error(err);
-    }
-    return res.render('index');
+
+    return res.render('dev/index');
     //return res.send({ result: result });
-  });
+
 });
 
 /* LIST ALL VAULTS */
@@ -164,10 +168,9 @@ router.get('/vault', auth, function(req, res, next) {
 
   storj.getBuckets(function(err, result) {
     if (err) {
-      return console.error(err);
+      return res.send({ status: 'fail', message: err.message });
     }
-    return res.send({ result: result });
-    //storj.destroy();
+    return res.send({ status: 'success', result: result });
   });
 });
 
@@ -193,9 +196,9 @@ router.get('/vault/create/:name', auth, function(req, res, next) {
 });
 
 /* LIST ALL FILES */
-router.get('/vault/:name', auth, function(req, res, next) {
+router.post('/vault', auth, function(req, res, next) {
 
-  var vaultName = req.params.name;
+  var vaultName = req.body.driveID;
 
   storj = new Environment({
    bridgeUrl: DIGIPULSE_HUB,
@@ -207,9 +210,9 @@ router.get('/vault/:name', auth, function(req, res, next) {
 
   storj.listFiles(vaultName, function(err, result) {
     if (err) {
-      return console.error(err);
+      return res.send({ status: 'fail', message: err.message });
     }
-    return res.send({ result: result });
+    return res.send({status: 'success', files: result });
     //storj.destroy();
   });
 });
