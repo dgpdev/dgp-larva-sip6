@@ -1,5 +1,13 @@
-extends layout
+html
+	head
+		title
+	body
+		form(method="post",enctype="multipart/form-data",action="/vault/file/upload")
+			p
+				input(type="text",name="vaultID",placeholder="vaultID",value="ed45fc44067d75a558e45785")
+			p
+				input(type="file",name="upl")
+			p
+				input(type="submit")
 
-block content
-  h1= title
-  p Welcome to #{title}
+p #[a(href="../../logout")= "logout"]

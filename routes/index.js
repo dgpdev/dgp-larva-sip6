@@ -8,7 +8,15 @@
 var express = require('express');
 var router = express.Router();
 
+// NPM INSTALL NODE-FS-EXTRA
+var fs = require('fs-extra');
+
 var crypto = require('crypto');
+
+/* DEVELOPMENT SWITCH;
+ * Use only local filesystem when true, DGP network when false
+*/
+var isDev = false;
 
 // SIP5
 var storjlib = require('storj-lib');
@@ -19,9 +27,31 @@ var keypair;
 
 // SIP6
 const { Environment } = require('storj');
-
-// SIP6
 var storj;
+
+/* MULTER UPLOAD TESTING
+ * Should improve images
+*/
+var multer = require('multer');
+
+const tmpDir = '/temp';
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    var randomFolder = genRandomString(24);
+    var tmpPath = '/home/steve/dgp-larva-sip6'  + tmpDir + '/' + randomFolder;
+    fs.mkdirsSync(tmpPath)
+    cb(null, tmpPath)
+  },
+  filename: function(req, file, callback) {
+		console.log(file)
+		callback(null, file.originalname)
+	}
+});
+
+var upload = multer({ storage: storage });
+
+// END multer
 
 function LoginSIP5 (user, pass) {
   return false;
@@ -50,6 +80,12 @@ function decrypt(key, data) {
     return decrypted;
 }
 
+var genRandomString = function(length){
+    return crypto.randomBytes(Math.ceil(length/2))
+        .toString('hex') /** convert to hexadecimal format */
+        .slice(0,length);   /** return required number of characters */
+};
+
 var auth = function(req, res, next) {
     if (req.session && req.session.authed)
         return next();
@@ -64,7 +100,6 @@ router.get('/logout',   function(req, res, next) {
     return res.send({ status: 'success' });
   });
 });
-
 
 router.get('/login/:user/:pass', function(req, res, next) {
 
@@ -97,19 +132,22 @@ router.get('/login/:user/:pass', function(req, res, next) {
      if (err) {
        return res.send({ error: err.message});
      }
-     return res.send({ status: 'success', result: result });
-     //storj.destroy();
+     // UX return
+     return res.render('index', {result: result});
+     // PLAIN TEST RETURN
+     //return res.send({ status: 'success', result: result });
    });
   });
 });
 
 /* GET GENERAL INFO */
-router.get('/', function(req, res, next) {
+router.get('/', auth, function(req, res, next) {
   storj.getInfo(function(err, result) {
     if (err) {
       return console.error(err);
     }
-    return res.send({ result: result });
+    return res.render('index');
+    //return res.send({ result: result });
   });
 });
 
@@ -176,10 +214,21 @@ router.get('/vault/:name', auth, function(req, res, next) {
   });
 });
 
+
+
+
+
+
 /* Upload files */
 router.get('/vault/file/upload/:vault/:filepath', auth, function(req, res, next) {
-  var bucketId = req.params.vault;
-  var fileP = req.params.filepath;
+  const bucketId = 'ed45fc44067d75a558e45785';
+
+
+
+  // File to upload
+  const uploadFilePath = '/home/steve/dgp-larva-sip6/package.json';
+  // file stored as
+  const fileName = 'README1.json';
 
   storj = new Environment({
    bridgeUrl: DIGIPULSE_HUB,
@@ -189,8 +238,8 @@ router.get('/vault/file/upload/:vault/:filepath', auth, function(req, res, next)
    logLevel: 4
  });
 
-  storj.storeFile(bucketId, fileP, {
-  filename: "test.js",
+  storj.storeFile(bucketId, uploadFilePath, {
+  filename: fileName,
   progressCallback: function(progress, uploadedBytes, totalBytes) {
     console.log('Progress: %d, uploadedBytes: %d, totalBytes: %d',
                 progress, uploadedBytes, totalBytes);
@@ -202,6 +251,65 @@ router.get('/vault/file/upload/:vault/:filepath', auth, function(req, res, next)
     return res.send({ result: fileId });
     }
   });
+});
+
+
+
+
+
+
+
+
+
+
+
+/* Upload files */
+router.post('/vault/file/upload', auth,  upload.single('upl'), function(req, res, next) {
+
+  if(isDev) {
+    console.log(req.body); //form fields
+  	// example output:{ vaultID: '000000000000' }
+  	console.log(req.file); //form files
+  	// example output:{ fieldname: 'upl',originalname: 'grumpy.png',encoding: '7bit',mimetype: 'image/png',destination: './uploads/',filename: '436ec561793aa4dc475a88e84776b1b9',path: 'uploads/436ec561793aa4dc475a88e84776b1b9',size: 277056 }
+  	res.status(204).end();
+  } else {
+
+    console.log(req.body); //form fields
+  	// example output:{ vaultID: '000000000000' }
+  	console.log(req.file); //form files
+  	// example output:{ fieldname: 'upl',originalname: 'grumpy.png',encoding: '7bit',mimetype: 'image/png',destination: './uploads/',filename: '436ec561793aa4dc475a88e84776b1b9',path: 'uploads/436ec561793aa4dc475a88e84776b1b9',size: 277056 }
+  	//res.status(204).end();
+
+    var bucketId = req.body.vaultID;
+    // File to upload
+    var uploadFilePath = req.file.path;
+    // file stored as
+    var fileName = req.file.filename;
+
+    storj = new Environment({
+     bridgeUrl: DIGIPULSE_HUB,
+     bridgeUser: req.session.email,
+     bridgePass: decrypt(SESSION_KEY, req.session.password),
+     encryptionKey: 'test', 
+     logLevel: 4
+    });
+
+    storj.storeFile(bucketId, uploadFilePath, {
+    filename: fileName,
+    progressCallback: function(progress, uploadedBytes, totalBytes) {
+      console.log('Progress: %d, uploadedBytes: %d, totalBytes: %d',
+                  progress, uploadedBytes, totalBytes);
+    },
+    finishedCallback: function(err, fileId) {
+      if (err) {
+        return console.error(err);
+      }
+      return res.send({ status: 'success', result: fileId });
+      }
+    });
+
+  }
+
 });
 
 router.get('/vault/file/download/:vault/:fileid', auth, function(req, res, next) {
@@ -235,6 +343,8 @@ router.get('/vault/file/download/:vault/:fileid', auth, function(req, res, next)
   });
 
 });
+
+
 
 
 module.exports = router;
