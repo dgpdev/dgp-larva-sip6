@@ -6,6 +6,7 @@
 
     <!-- Bootstrap core CSS -->
     <link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -15,17 +16,21 @@
   </head>
   <body>
     <div class="container">
-      <a href="../logout">Click here to logout</a>
-      <div class="panel panel-default col-md-6 col-md-offset-3">
+      <div class="row" style="margin-bottom:40px">
+        <div class="col-md-8 col-md-offset-2">
+          <a href="../logout">Click here to logout</a>
+        </div>
+      </div>
+      <div class="panel panel-default col-md-8 col-md-offset-2">
         <div class="panel-body">
-            <table id="DRIVE_LIST" name="DRIVE_LIST">
+            <table id="DRIVE_LIST" name="DRIVE_LIST" class="table table-responsive">
             </table>
 
-            <table id="FILE_LIST" name="FILE_LIST">
+            <table id="FILE_LIST" name="FILE_LIST" class="table table-responsive">
             </table>
 
             <form id="uploadForm" style="display:none" ref="uploadForm" action="dev/upload" method="post" encType="multipart/form-data">
-              <input id="upload-input" type="file" name="upl" >
+              <input id="upload-input" type="file" name="upl">
               <input id="driveID" type="hidden" name="driveID" value="">
             </form>
         </panel>
@@ -49,6 +54,10 @@
       tempDrive = $(el.target).data('drive');
       $('#driveID').val(tempDrive);
       $('#upload-input').click();
+    });
+
+    $('#FILE_LIST').on( 'click', 'button.download', function () {
+      downloadFile($(this).attr('data-drive'), $(this).attr('data-filename'), $(this).attr('data-id'), $(this).attr('data-mime'));
     });
 
 
@@ -148,10 +157,12 @@
 
             bucketsWithFiles.result.reverse().forEach(function(file) {
               //console.log(bucket);
+              console.log('ye' + data.driveID);
+              var currentDrive = data.driveID;
               table.append("<tr><td class='filenames'><strong>" + file.filename + "</strong></td><td>" + file.filename.split('.').pop() + "</td> " +
-                  "<td class=\"text-right\"><button class='btn btn-success download text-white btn-sm' data-mime='"+ file.filename.split('.').pop() +"' data-id='"+ file.id +"' data-drive='"+ file.bucket +"' data-filename='"+ file.filename +"'> " +
+                  "<td class=\"text-right\"><button class='btn btn-success download text-white btn-sm' data-mime='"+ file.filename.split('.').pop() +"' data-id='"+ file.id +"' data-drive='"+ data.driveID +"' data-filename='"+ file.filename +"'> " +
                   "<i class='fa fa-download' aria-hidden='true'></i></button> " +
-                  "<button class='btn btn-danger text-white btn-sm' onClick='deleteFile(this);' data-id='"+ file.id +"' data-drive='"+ file.bucket +"'> " +
+                  "<button class='btn btn-danger text-white btn-sm' onClick='deleteFile(this);' data-id='"+ file.id + "' data-drive='" + data.driveID + "'> " +
                   "<i class='fa fa-trash' aria-hidden='true'></i></button></td> " +
                   "</tr>");
               fileSize += file.size;
@@ -160,6 +171,38 @@
           }
         })
       }
+
+      function downloadFile(containerID, filename, fileID, fileMime) {
+
+        var data = {};
+        data.driveID = containerID;
+        data.fileID = fileID;
+        data.fileNAME = filename;
+        data.MIME = fileMime;
+
+        console.log(data);
+
+        $.ajax({
+          method: 'POST',
+          /* /list/:id/download/:name/:fileid/mime/:mime */
+          url: '/dev/vault/download/',
+          data: JSON.stringify(data),
+          contentType:  'application/json',
+          processData: false
+        }).done(function(response) {
+
+          if (response.status === 'fail') {
+            // Error handling
+            console.error(response.message, 'Error occured!')
+          }
+          if (response.status === 'success') {
+            // Error handling
+            console.log(response.message, 'Success!');
+            window.location = '/dev/download/' + response.tmp + '/' + filename ;
+
+          }
+        })
+}
 
       function add3Dots(string, limit) {
         var dots = "...";
