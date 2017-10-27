@@ -23,6 +23,11 @@
 
             <table id="FILE_LIST" name="FILE_LIST">
             </table>
+
+            <form id="uploadForm" style="display:none" ref="uploadForm" action="dev/upload" method="post" encType="multipart/form-data">
+              <input id="upload-input" type="file" name="upl" >
+              <input id="driveID" type="hidden" name="driveID" value="">
+            </form>
         </panel>
       </div>
     </div>
@@ -39,6 +44,45 @@
       listFiles($(this).attr('data-drive'));
     });
     /* Get the drives available */
+
+    $('#DRIVE_LIST').on( 'click', '.btn-up', function (el) {
+      tempDrive = $(el.target).data('drive');
+      $('#driveID').val(tempDrive);
+      $('#upload-input').click();
+    });
+
+
+    // Files have been selected to start uploading
+      $('#upload-input').on('change', function(){
+        var files = $(this).get(0).files;
+        var drive = $(this).closest('tr').children('.driveid').text();
+        $('#driveID').val(tempDrive);
+
+        var files = $(this).get(0).files;
+        if (files.length > 0) {
+            var formData = new FormData();
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                //formData.append('pictures', file, file.name);
+                formData.append('uploads', file, file.name);
+                formData.append('driveID', tempDrive);
+            }
+
+            $.ajax({
+                url          : '/dev/vault/upload',
+                type         : 'POST',
+                data         : formData,
+                processData  : false,
+                contentType  : false,
+                success      : function (links) {
+
+                }
+            });
+        }
+
+      });
+
       listDrives();
 
       function listDrives() {
@@ -96,14 +140,13 @@
           }
           if (bucketsWithFiles.status === 'success') {
 
-
             var table = $("#FILE_LIST");
             table.empty();
 
             table.append("<thead><tr><td>Filename</td><td>MIME</td><td class=\"text-right\">Action</td></tr>");
             table.append("<tbody>");
 
-            bucketsWithFiles.files.reverse().forEach(function(file) {
+            bucketsWithFiles.result.reverse().forEach(function(file) {
               //console.log(bucket);
               table.append("<tr><td class='filenames'><strong>" + file.filename + "</strong></td><td>" + file.filename.split('.').pop() + "</td> " +
                   "<td class=\"text-right\"><button class='btn btn-success download text-white btn-sm' data-mime='"+ file.filename.split('.').pop() +"' data-id='"+ file.id +"' data-drive='"+ file.bucket +"' data-filename='"+ file.filename +"'> " +
@@ -117,7 +160,6 @@
           }
         })
       }
-
 
       function add3Dots(string, limit) {
         var dots = "...";

@@ -16,7 +16,7 @@ var crypto = require('crypto');
 /* DEVELOPMENT SWITCH;
  * Use only local filesystem when true, DGP network when false
 */
-var isDev = false;
+var isDev = true;
 
 // SIP5
 var storjlib = require('storj-lib');

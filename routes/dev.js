@@ -212,7 +212,7 @@ router.post('/vault', auth, function(req, res, next) {
     if (err) {
       return res.send({ status: 'fail', message: err.message });
     }
-    return res.send({status: 'success', files: result });
+    return res.send({status: 'success', result: result });
     //storj.destroy();
   });
 });
@@ -252,49 +252,59 @@ router.get('/vault/file/upload/:vault/:filepath', auth, function(req, res, next)
 });
 
 /* Upload files */
-router.post('/vault/file/upload', auth,  upload.single('upl'), function(req, res, next) {
+router.post('/vault/upload', auth,  upload.any(), function(req, res, next) {
 
   if(isDev) {
     console.log(req.body); //form fields
   	// example output:{ vaultID: '000000000000' }
-  	console.log(req.file); //form files
+  	console.log(req.files); //form files
   	// example output:{ fieldname: 'upl',originalname: 'grumpy.png',encoding: '7bit',mimetype: 'image/png',destination: './uploads/',filename: '436ec561793aa4dc475a88e84776b1b9',path: 'uploads/436ec561793aa4dc475a88e84776b1b9',size: 277056 }
-  	res.status(204).end();
+    return res.send({ status: 'success', result: req.files });
+    //res.status(204).end();
   } else {
 
-    console.log(req.body); //form fields
-  	// example output:{ vaultID: '000000000000' }
-  	console.log(req.file); //form files
-  	// example output:{ fieldname: 'upl',originalname: 'grumpy.png',encoding: '7bit',mimetype: 'image/png',destination: './uploads/',filename: '436ec561793aa4dc475a88e84776b1b9',path: 'uploads/436ec561793aa4dc475a88e84776b1b9',size: 277056 }
-  	//res.status(204).end();
+    var files = req.files;
+    if(files){
+        files.forEach(function(file){
+          console.log('-----------------------------------------');
+          console.log(file.path);
+          console.log('-----------------------------------------');
 
-    var bucketId = req.body.vaultID;
-    // File to upload
-    var uploadFilePath = req.file.path;
-    // file stored on vault as
-    var fileName = req.file.filename;
+          var bucketId = req.body.driveID;
+          // File to upload
+          var uploadFilePath = file.path;
+          // file stored on vault as
+          var fileName = file.filename;
 
-    storj = new Environment({
-     bridgeUrl: DIGIPULSE_HUB,
-     bridgeUser: req.session.email,
-     bridgePass: decrypt(SESSION_KEY, req.session.password),
-     encryptionKey: 'test',
-     logLevel: 4
-    });
+          console.log(bucketId);
+          console.log(uploadFilePath);
+          console.log(fileName);
 
-    storj.storeFile(bucketId, uploadFilePath, {
-    filename: fileName,
-    progressCallback: function(progress, uploadedBytes, totalBytes) {
-      console.log('Progress: %d, uploadedBytes: %d, totalBytes: %d',
-                  progress, uploadedBytes, totalBytes);
-    },
-    finishedCallback: function(err, fileId) {
-      if (err) {
-        return console.error(err);
-      }
-      return res.send({ status: 'success', result: fileId });
-      }
-    });
+          storj = new Environment({
+           bridgeUrl: DIGIPULSE_HUB,
+           bridgeUser: req.session.email,
+           bridgePass: decrypt(SESSION_KEY, req.session.password),
+           encryptionKey: 'test',
+           logLevel: 4
+          });
+
+          storj.storeFile(bucketId, uploadFilePath, {
+          filename: fileName,
+          progressCallback: function(progress, uploadedBytes, totalBytes) {
+            console.log('Progress: %d, uploadedBytes: %d, totalBytes: %d',
+                        progress, uploadedBytes, totalBytes);
+          },
+          finishedCallback: function(err, fileId) {
+            if (err) {
+              return console.error(err);
+            }
+            return res.send({ status: 'success', result: fileId });
+            }
+          });
+        });
+    }
+
+
 
   }
 
