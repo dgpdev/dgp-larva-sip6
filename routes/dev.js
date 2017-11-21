@@ -12,6 +12,13 @@ var fs = require('fs-extra');
 
 var crypto = require('crypto');
 
+var greet = require("../modules/dgp_encryption.js");
+var greetings = new greet();
+
+var dgpauth = require("../modules/dgp-auth.js");
+var dgpTEST = require("../modules/test.js");
+var DGP_AUTH = new dgpauth();
+
 /* DEVELOPMENT SWITCH;
  * Use only local filesystem when true, DGP network when false
  */
@@ -25,9 +32,7 @@ var client;
 var keypair;
 
 // SIP6
-const {
-  Environment
-} = require('storj');
+const {Environment} = require('storj');
 var storj;
 
 /* MULTER UPLOAD TESTING
@@ -56,10 +61,6 @@ var upload = multer({
 
 // END multer
 
-function LoginSIP5(user, pass) {
-  return false;
-}
-
 function storeSessionKey(req, key, user) {
   req.session.authed = true;
   req.session.keypair = key;
@@ -67,27 +68,10 @@ function storeSessionKey(req, key, user) {
   req.session.password = encrypt(SESSION_KEY, user.password);
 }
 
-function encrypt(key, data) {
-  var cipher = crypto.createCipher('aes-256-cbc', key);
-  var crypted = cipher.update(data, 'utf-8', 'hex');
-  crypted += cipher.final('hex');
-
-  return crypted;
+function storeSessionPassphrase(req, key, user) {
+  req.session.passphrase = encrypt(SESSION_KEY, user.password);
 }
 
-function decrypt(key, data) {
-  var decipher = crypto.createDecipher('aes-256-cbc', key);
-  var decrypted = decipher.update(data, 'hex', 'utf-8');
-  decrypted += decipher.final('utf-8');
-
-  return decrypted;
-}
-
-var genRandomString = function(length) {
-  return crypto.randomBytes(Math.ceil(length / 2))
-    .toString('hex') /** convert to hexadecimal format */
-    .slice(0, length); /** return required number of characters */
-};
 
 var auth = function(req, res, next) {
   if (req.session && req.session.authed)
@@ -96,6 +80,11 @@ var auth = function(req, res, next) {
     console.log('Session NOT found');
   return res.render('dev/login');
   //return res.send({ status: 'fail', message: 'not logged in to DigiPulse network' });
+};
+
+var requirePassphrase = function(req, res, next) {
+  //return res.render('dev/login');
+  return res.send({ status: 'fail', passphrase: false, message: 'Passphrase required.' });
 };
 
 /* LOGOUT */
@@ -110,8 +99,12 @@ router.get('/logout', function(req, res, next) {
 
 
 /* GET GENERAL INFO */
-router.get('/', auth, function(req, res, next) {
+router.get('/', auth,  function(req, res, next) {
 
+  //return res.send(DGP_AUTH.test(res));
+
+  console.log('yay');
+  console.log(greetings.genRandomString(10));
   return res.render('dev/index');
   //return res.send({ result: result });
 
@@ -142,15 +135,46 @@ router.get('/vault/create/:name', auth, function(req, res, next) {
 });
 
 
+/* Remove a drive
+ * @dev: Working with AJAX.
+*/
+router.post('/vault/delete', auth, function(req, res, next) {
+  var vaultName = req.body.vaultID;
+
+  storj = new Environment({
+    bridgeUrl: DIGIPULSE_HUB,
+    bridgeUser: req.session.email,
+    bridgePass: greetings.decrypt(SESSION_KEY, req.session.password),
+    encryptionKey: 'test',
+    logLevel: 4
+  });
+
+  storj.deleteBucket(vaultName, function(err, result) {
+    if (err) {
+      return console.error(err);
+    }
+    return res.send({
+      status: 'success',
+      result: result
+    });
+    storj.destroy();
+  });
+});
+
+
 /* Login with user:pass
  * @dev: Working with AJAX.
 */
 router.post('/login', function(req, res, next) {
 
+  return dgpTEST.login(req, res, req.body);
+
   /* This is the only stage where the password is needed in plaintext.
    *  Once sent to the sessios, it get's encrypted by the SESSION_KEY.
-   */
 
+
+   console.log(DGP_AUTH.login(req, res, req.body));
+   return;
   // SIP5 basic login
   var user = {
     email: req.body.user,
@@ -201,6 +225,8 @@ router.post('/login', function(req, res, next) {
       });
     });
   });
+
+  */
 });
 
 
@@ -212,8 +238,8 @@ router.get('/vault', auth, function(req, res, next) {
   storj = new Environment({
     bridgeUrl: DIGIPULSE_HUB,
     bridgeUser: req.session.email,
-    bridgePass: decrypt(SESSION_KEY, req.session.password),
-    encryptionKey: 'test',
+    bridgePass: greetings.decrypt(SESSION_KEY, req.session.password),
+    encryptionKey: 'test1',
     logLevel: 4
   });
 

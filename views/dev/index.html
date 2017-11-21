@@ -36,6 +36,26 @@
         </panel>
       </div>
     </div>
+
+    <!-- Modal for passphrase -->
+    <div class="modal fade" id="EnSureModal" role="dialog">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Passphrase required </h4>
+              </div>
+              <div class="modal-body">
+                  <p>Please enter your passphrase</p>
+                  <input type="password" class="col-md-12" placeholder="Super secret Passphrase">
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">submit</button>
+              </div>
+          </div>
+      </div>
+  </div>
   </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -43,25 +63,32 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
+    <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/e27b99df/index.js"></script>
+
+
     <script>
 
-    $('#DRIVE_LIST').on( 'click', '.btn-getdrive', function () {
-      listFiles($(this).attr('data-drive'));
-    });
-    /* Get the drives available */
+      $('#DRIVE_LIST').on( 'click', '.btn-getdrive', function () {
+        listFiles($(this).attr('data-drive'));
+      });
 
-    $('#DRIVE_LIST').on( 'click', '.btn-up', function (el) {
-      tempDrive = $(el.target).data('drive');
-      $('#driveID').val(tempDrive);
-      $('#upload-input').click();
-    });
+      $('#DRIVE_LIST').on( 'click', '.btn-up', function (el) {
+        tempDrive = $(el.target).data('drive');
+        $('#driveID').val(tempDrive);
+        $('#upload-input').click();
+      });
 
-    $('#FILE_LIST').on( 'click', 'button.download', function () {
-      downloadFile($(this).attr('data-drive'), $(this).attr('data-filename'), $(this).attr('data-id'), $(this).attr('data-mime'));
-    });
+      $('#DRIVE_LIST').on( 'click', '.btn-trash', function () {
+        tempDrive = $(this).closest('tr').children('.driveid').text();
+        console.log("Deleting drive: " + tempDrive );
+        deleteVault(tempDrive);
+        $("#EnSureModal").modal();
+      });
 
+      $('#FILE_LIST').on( 'click', 'button.download', function () {
+        downloadFile($(this).attr('data-drive'), $(this).attr('data-filename'), $(this).attr('data-id'), $(this).attr('data-mime'));
+      });
 
-    // Files have been selected to start uploading
       $('#upload-input').on('change', function(){
         var files = $(this).get(0).files;
         var drive = $(this).closest('tr').children('.driveid').text();
@@ -104,6 +131,7 @@
             if ($('#DRIVE_LIST tr').length != 0) {
               toastr.error(buckets.message, 'Error occured!')
             }
+            if (!buckets.passphrase) $("#EnSureModal").modal();
 
           }
           var primary_drive;
@@ -115,6 +143,11 @@
             table.append("<tbody>");
 
             buckets.result.forEach(function(bucket) {
+              /* CHECK ENCRYPTED DRIVES HERE */
+              if(!bucket.decrypted) alert('Ooopsq its locked!');
+
+
+
               table.append("<tr valign='middle'><td><strong>" + bucket.name + "</strong></td><td class='driveid'>" + bucket.id +"</td><td class=\"text-right\"> " +
                   "<button class='btn btn-outline-primary btn-sm mb-1 btn-getdrive' data-drive='"+ bucket.id +"'>View contents</button> " +
                   "<button class='btn btn-outline-primary btn-sm mb-1 btn-up' data-drive='" + bucket.id +"'>Add files</button> " +
@@ -202,7 +235,32 @@
 
           }
         })
-}
+      }
+
+      function deleteVault(vaultID) {
+        var data = {};
+        data.vaultID = vaultID;
+
+        $.ajax({
+          method: 'POST',
+          url: '/dev/vault/delete',
+          data: JSON.stringify(data),
+          contentType:  'application/json',
+          processData: false
+        }).done(function(response) {
+
+          if (response.status === 'fail') {
+            // Error handling
+            console.error(response.message, 'Error occured!')
+          }
+          if (response.status === 'success') {
+            // Error handling
+            console.log(response.message, 'Success!');
+            location.reload();
+
+          }
+        })
+      }
 
       function add3Dots(string, limit) {
         var dots = "...";
